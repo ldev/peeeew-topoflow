@@ -1,0 +1,90 @@
+{
+    "links": [
+        {
+            "from": "00a-core-1",
+            "to": "00b-core-1",
+            "rate_rx": "1826 Mbit\/s"
+        },
+        {
+            "from": "00a-core-1",
+            "to": "00a-core-agg-1",
+            "rate_rx": "68 Mbit\/s"
+        },
+        {
+            "from": "00a-core-1",
+            "to": "00a-core-2",
+            "rate_rx": "118 Mbit\/s"
+        },
+        {
+            "from": "00a-core-2",
+            "to": "00b-core-2",
+            "rate_rx": "616 Mbit\/s"
+        },
+        {
+            "from": "00a-core-2",
+            "to": "00a-core-agg-1",
+            "rate_rx": "853 Mbit\/s"
+        },
+        {
+            "from": "00a-core-2",
+            "to": "00a-core-1",
+            "rate_rx": "0 Mbit\/s"
+        },
+        {
+            "from": "00b-core-1",
+            "to": "00b-core-2",
+            "rate_rx": "1971 Mbit\/s"
+        },
+        {
+            "from": "00b-core-1",
+            "to": "00b-core-agg-1",
+            "rate_rx": "1602 Mbit\/s"
+        },
+        {
+            "from": "00b-core-1",
+            "to": "00b-core-2",
+            "rate_rx": "0 Mbit\/s"
+        },
+        {
+            "from": "00b-core-2",
+            "to": "00b-core-agg-1",
+            "rate_rx": "393 Mbit\/s"
+        },
+        {
+            "from": "00b-core-2",
+            "to": "00a-core-2",
+            "rate_rx": "1248 Mbit\/s"
+        },
+        {
+            "from": "00b-core-2",
+            "to": "00b-core-1",
+            "rate_rx": "0 Mbit\/s"
+        }
+    ],
+    "nodes": {
+        "00a-core-1": {
+            "x": 500,
+            "y": 100
+        },
+        "00a-core-2": {
+            "x": 500,
+            "y": 400
+        },
+        "00b-core-1": {
+            "x": 900,
+            "y": 100
+        },
+        "00b-core-2": {
+            "x": 900,
+            "y": 400
+        },
+        "00a-core-agg-1": {
+            "x": 100,
+            "y": 400
+        },
+        "00b-core-agg-1": {
+            "x": 1300,
+            "y": 400
+        }
+    }
+}
