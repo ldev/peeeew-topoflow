@@ -96,6 +96,40 @@
                 var svg = main_group;
 
 
+                /**
+                    Defines the default options for the maps. This is to be able to override options by each JSON source.
+                */
+                var options = {
+                    /*
+                        Whether or not the node text should be below or centered within the node.
+                        false: below
+                        true: centered
+                    */
+                    "node_text_centered": false,
+
+                    /*
+                        Whether or not the optional text on the links should be rotated along the link or not
+                        false: no rotation
+                        true: text is rotated along the link
+                    */
+                    "link_text_rotation": true,
+
+                    /*
+                        prevents the link text from being displayed upside down (180 degrees)
+                    */
+                    "link_text_prevent_upside_down": true,
+
+
+
+                    /*
+                        Not implemented yet
+                    */
+                    "display_fullscreen": false,
+                    "svg_width": 1500,
+                    "svg_height": 1000
+                };
+
+
                 var node_radius = 40;
 
                 var markerBoxWidth = 20
@@ -175,21 +209,68 @@
                 var dataset = {};
 
 
-                function draw_node(arg){
-                    console.log('Drawing node ' + arg.name);
-                    if('type' in arg){
-                        if(arg.type == 'router'){
-                            console.log('ROUTER');
+                /*
+                    Required parameters for adding a node
+                */
+                var required_node_parameters = [
+                    'x', // x coordinate
+                    'y', // y coordinate
+                    'name' // name of node
+                ]
+
+
+                /*
+                    Required parameters for adding a link
+                */
+                var required_link_parameters = [
+                    'x1', // start x coordinate
+                    'y1', // start y coordinate
+                    'x2', // end y coordinate
+                    'y2' // end y coordinate
+                ]
+
+
+
+
+
+
+
+
+                /*
+                    #########################
+                    #                       #
+                    #       FUNCTIONS       #
+                    #                       #
+                    #########################
+                */
+                function draw_node(args){
+                    /*
+                        Validating args to confirm required node parameters
+                    */
+                    for(prop in required_node_parameters){
+                        if(required_node_parameters[prop] in args !== true){
+                            console.log('Error: unable to draw node. Missing parameter "' + required_node_parameters[prop] + '"');
+                            return false;
                         }
                     }
 
+                    console.log('Drawing node ' + args.name);
 
                     /*
-                        Add node circle
+                    if('type' in args){
+                        if(args.type == 'router'){
+                            console.log('ROUTER');
+                        }
+                    }
+                    */
+
+
+                    /*
+                        Add node
                     */
                     var node = svg.append("circle")
-                        .attr('cx', arg.x)
-                        .attr('cy', arg.y)
+                        .attr('cx', args.x)
+                        .attr('cy', args.y)
                         .attr('r', node_radius)
                         .attr('stroke-width', 5)
                         .attr('stroke', color.circle_outline)
@@ -204,16 +285,26 @@
                             d3.select(this).style("fill", color.circle_fill);
                         });
 
+                    /*
+                        If the node text should be drawn in center of the node, or below.
+                        Defaults to below.
+                    */
+                    if(options.node_text_centered === true){
+                        var node_text_location = args.y;
+                    }else{
+                        var node_text_location = args.y+(node_radius*1.4)
+                    }
+
                     svg.append("text")
                         .attr('class', 'node-text')
-                        .attr('x', arg.x)
-                        .attr('y', arg.y+(node_radius*1.4))
+                        .attr('x', args.x)
+                        .attr('y', node_text_location)
                         .attr('text-anchor', 'middle')
                         .attr('dominant-baseline', 'middle')
-                        .text(arg.name)
+                        .text(args.name)
 
-                    if('state' in arg){
-                        if(arg.state == 'down'){
+                    if('state' in args){
+                        if(args.state == 'down'){
                             console.log('ROUTER DOWN');
                             node.attr('stroke', '#f00');
                         }
@@ -232,7 +323,7 @@
                     //Global settings
                     var split_point = 0.5;
                     var text_pos = 0.5;
-                    var rotate_text = true; 
+
                     var midpoint_offset = 20;
 
                     var from_node_pos_x = dataset.nodes[args.from].x;
@@ -253,17 +344,17 @@
                     var angle_a_to_b = Math.atan2(to_node_pos_y - from_node_pos_y, to_node_pos_x - from_node_pos_x);
                     var degrees = angle_a_to_b*(180/Math.PI)
 
+
                     /*
                         To flip the text rotation the easy way for humans to read (e.g. never upside down)
                     */
-                    
-                    if(rotate_text != false){
+                    text_degrees = 0;
+                    if(options.link_text_rotation === true){
                         text_degrees = degrees;
-                        if(text_degrees > 90 && text_degrees < 181){
+
+                        if(options.link_text_prevent_upside_down === true && text_degrees > 90 && text_degrees < 181){
                             text_degrees += 180;
                         }
-                    }else{
-                        text_degrees = 0;
                     }
 
 
@@ -272,8 +363,8 @@
                     */
                     // var tx_rate = Math.floor(Math.random() * 10000) + ' Mb/s';
                     // var rx_rate = Math.floor(Math.random() * 10000) + ' Mb/s';
-                    var rate_in = 'unknown',
-                        rate_out = 'unknown';
+                    var rate_in = '',
+                        rate_out = '';
 
                     if('rate_in' in args){
                         rate_in = args.rate_in; 
@@ -360,6 +451,15 @@
                             .attr('dominant-baseline', 'middle')
                             .text(rate_in)
                     }
+                }
+
+
+                /**
+                    Used for placing text on links
+                    @param {object} args: must contain 'x', 'y' and 'text'
+                */
+                function draw_text_on_link(args){
+
                 }
 
                 function draw_link_1way(args){
@@ -463,23 +563,34 @@
                     Prevent caching
                 */
                 function run(){
+                    console.log('run() called');
                     $.getJSON('<?php echo $_GET['source']?>', {_: new Date().getTime()}, function(data){
-                        svg.selectAll(".svg_container").remove();
+                        // svg.selectAll(".svg_container").remove();
                         dataset = data;
 
-                        $.each(dataset.links, function(key, link_prop){
+                        console.log(data);
+
+                        /*
+                            override default options
+                        */
+                        if('options' in data){
+                            options = data.options;
+                        }
+
+                        $.each(data.links, function(key, link_prop){
                             //Identify multiple links
                         });
 
-                        $.each(dataset.links_1way, function(key, link_prop){
+                        $.each(data.links_1way, function(key, link_prop){
+                            console.log('links_1way');
                             draw_link_1way(link_prop);
                         });
 
-                        $.each(dataset.links, function(key, link_prop){
+                        $.each(data.links, function(key, link_prop){
                             draw_link(link_prop);
                         });
 
-                        $.each(dataset.nodes, function(node_name, node_prop){
+                        $.each(data.nodes, function(node_name, node_prop){
                             node_prop.name = node_name;
                             draw_node(node_prop);
                         });

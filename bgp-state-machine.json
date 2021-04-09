@@ -1,0 +1,71 @@
+{
+  "options": {
+    "node_text_centered": true,
+    "link_text_rotation": false
+  },
+  "nodes": {
+    "Establised": {
+      "x": 300,
+      "y": 300
+    },
+    "Openconf.": {
+      "x": 600,
+      "y": 200
+    },
+    "Opensent": {
+      "x": 900,
+      "y": 300
+    },
+    "Active": {
+      "x": 900,
+      "y": 600
+    },
+    "Connect": {
+      "x": 600,
+      "y": 700
+    },
+    "Idle": {
+      "x": 300,
+      "y": 600
+    },
+    "Loop Est.": {
+      "x": 100,
+      "y": 150
+    },
+    "Loop Idle": {
+      "x": 100,
+      "y": 750
+    },
+    "Loop Conn.": {
+      "x": 600,
+      "y": 850
+    },
+    "Loop Act.": {
+      "x": 1100,
+      "y": 750
+    },
+    "Loop Ope.": {
+      "x": 600,
+      "y": 50
+    }
+  },
+  "links": [
+    {"from": "Connect", "to": "Active"},
+    {"from": "Active", "to": "Opensent"},
+    {"from": "Establised", "to": "Loop Est."},
+    {"from": "Idle", "to": "Loop Idle"},
+    {"from": "Connect", "to": "Loop Conn."},
+    {"from": "Active", "to": "Loop Act."},
+    {"from": "Openconf.", "to": "Loop Ope."}
+  ],
+  "links_1way": [
+    {"from": "Establised", "to": "Idle"},
+    {"from": "Idle", "to": "Connect"},
+    {"from": "Connect", "to": "Opensent"},
+    {"from": "Opensent", "to": "Openconf."},
+    {"from": "Opensent", "to": "Idle"},
+    {"from": "Active", "to": "Idle"},
+    {"from": "Openconf.", "to": "Establised"},
+    {"from": "Openconf.", "to": "Idle"}
+  ]
+}

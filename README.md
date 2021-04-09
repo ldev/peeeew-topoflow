@@ -1,22 +1,71 @@
-
 # peeeew-topoflow
-Topology flowchart, with live values, drawn by SVG with your web browser. Relies on JSON files to feed topology/data
+Topology flowchart ("network weathermap"), with live values, drawn by SVG with your web browser. Relies on JSON files to feed topology/data.
 
 Relies on D3 javascript library - https://d3js.org/
+Will soon utilize the excellent graphics from the ecceman's affinity repo for network graphics - https://github.com/ecceman/affinity
+
+**Disclaimer: This is not production ready in any way, we're still adding basic stuff and basicly making it work as intended.**
+
+
+# Why?
+* Ẁhen you need something to quick draw a topology flow map
+* When you need something lighter than php-weathermap for network weathermap
+* When you do not want to run anything serverside
+* When you need something to update constantly, like once a second.
+
+
+# Sample images
+![BGP state machine as example](/example-images/example-bgp-state-machine.png)
+
+![Sample network topology](/example-images/example-bgp-state-machine.png)
+
+
+# Sample JSON file
+```json
+{
+  "options": {},
+  "nodes": {
+    "node 1": {
+      "x": 300,
+      "y": 500
+    },
+    "node 2": {
+      "x": 800,
+      "y": 500
+    },
+    "node 3": {
+      "x": 1300,
+      "y": 500
+    }
+  },
+  "links": [
+    {
+      "from": "node 1",
+      "to": "node 2",
+      "rate_out": "Some megabyters",
+      "rate_in": "Even more gigabyters"
+    }
+  ],
+  "links_1way": [
+    {
+      "from": "node 2",
+      "to": "node 3",
+      "rate": "12.3 G"
+    }
+  ]
+}
+```
+
 
 # Todo
+1. Parsing the JSON object and calculating a new object. To be able to create multiple links, some being 1way and some being 2way
+2. Making the terms less network specific, as this could be used to other things than network topologies
+3. Implement overriding of default variables (colors, sizes etc.)
+4. Multiple links between nodes. Think link-aggregation
+5. Implement link offset
 
-I proiritert rekkefølge
 
-1. stoette for 1-way links
-    *Json format
-    *Ny draw funksjon
-2. støtte for flere linker mellom samme noder
-    * Finne ut antall linker mellom 2 noder (før man starter tegning)
-    * Angi hvilken link av totalt antall man tegner til draw line funksjonen (draw funksjon på ha nr og n) typ link 1 av 4
-    * kalkulere offset i draw line funksjon basert på nr av n
-3. navngi variabler så det er generelt og ikke nettverks spesifikt. Feks at det kan være også strøm.
-4. render-options i JSON. Styrer farger osv. Ha en fornuftig default der, så man ikke trenger å sette noe.
-        4.1. farging av linker
-        4.2. posisjon av node label
-5. alt annet
+# Made by who
+Two network engineers, not satisfied with what we could find in the open source world.
+* Marius Larsen
+* Jonas H. Lindstad

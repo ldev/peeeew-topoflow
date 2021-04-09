@@ -1,4 +1,8 @@
 {
+  "options": {
+    "link_text_rotation": true,
+    "link_text_prevent_upside_down": true
+  },
   "nodes": {
     "00a-core-1": {
       "x": 500,
