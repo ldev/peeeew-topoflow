@@ -1,16 +1,19 @@
 # peeeew-topoflow
 Topology flowchart ("network weathermap"), with live values, drawn by SVG with your web browser. Relies on JSON files to feed topology/data.
 
-Relies on D3 javascript library - https://d3js.org/
-Will soon utilize the excellent graphics from the ecceman's affinity repo for network graphics - https://github.com/ecceman/affinity
-
 **Disclaimer: This is not production ready in any way, we're still adding basic stuff and basicly making it work as intended.**
+
+## Dependancies
+PS: No need to install anything :-)
+* Relies on D3 javascript library - https://d3js.org/. This is being loaded from the d3js CDN.
+* Will soon utilize the excellent graphics from the ecceman's affinity repo for network graphics - https://github.com/ecceman/affinity. The vector images we want to use will be included in the javascript directly (drawn by D3 into the SVG object).
+
 
 
 # Why?
-* Ẁhen you need something to quick draw a topology flow map
-* When you need something lighter than php-weathermap for network weathermap
-* When you do not want to run anything serverside
+* Ẁhen you need something to quick draw a topology flow map.
+* When you need something lighter than php-weathermap for network weathermaps.
+* When you do not want to run anything serverside.
 * When you need something to update constantly, like once a second.
 
 
