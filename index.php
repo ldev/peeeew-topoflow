@@ -100,6 +100,13 @@
                     Defines the default options for the maps. This is to be able to override options by each JSON source.
                 */
                 var options = {
+
+                    /*
+                        Sets the radius of the node, if node type is not specified, or node type is "circle"
+                        default: 40
+                    */
+                    "node_radius": 40,
+
                     /*
                         Whether or not the node text should be below or centered within the node.
                         false: below
@@ -130,13 +137,13 @@
                 };
 
 
-                var node_radius = 40;
+                // var node_radius = 40;
 
                 var markerBoxWidth = 20
                 var markerBoxHeight = 20
                 var arrowPoints = [[0, 0], [0, 20], [20, 10]];
 
-                var dataset_master = {
+                var dataset_suggested_format = {
                     "links": [
                         {
                             "from": "00a-core-1",
@@ -268,10 +275,11 @@
                     /*
                         Add node
                     */
+                    console.log('options.node_radius:' + options.node_radius);
                     var node = svg.append("circle")
                         .attr('cx', args.x)
                         .attr('cy', args.y)
-                        .attr('r', node_radius)
+                        .attr('r', options.node_radius)
                         .attr('stroke-width', 5)
                         .attr('stroke', color.circle_outline)
                         .style('fill', color.circle_fill)
@@ -292,7 +300,7 @@
                     if(options.node_text_centered === true){
                         var node_text_location = args.y;
                     }else{
-                        var node_text_location = args.y+(node_radius*1.4)
+                        var node_text_location = args.y+(options.node_radius*1.4)
                     }
 
                     svg.append("text")
@@ -508,14 +516,13 @@
                     /*
                         A -> B
                     */
-                    console.log(node_radius);
                     svg
                         .append('line')
                             .attr('class', 'link link-' + link_state)
                             .attr('x1', from_node_pos_x)
                             .attr('y1', from_node_pos_y)
-                            .attr('x2', to_node_pos_x- (Math.cos(angle_a_to_b) * (node_radius+25)))
-                            .attr('y2', to_node_pos_y - (Math.sin(angle_a_to_b) * (node_radius+25)))
+                            .attr('x2', to_node_pos_x- (Math.cos(angle_a_to_b) * (options.node_radius+25)))
+                            .attr('y2', to_node_pos_y - (Math.sin(angle_a_to_b) * (options.node_radius+25)))
                             .attr('stroke', color.link)
                             .attr('stroke-width', 20)
                             .attr('marker-end', 'url(#arrow)')
@@ -571,10 +578,16 @@
                         console.log(data);
 
                         /*
-                            override default options
+                            Conditionally overrides the default options from the options in the loaded JSON object "data"
+                            Will only override if the option is already defined in the "options" object
                         */
                         if('options' in data){
-                            options = data.options;
+                            for([key, value] of Object.entries(data.options)) {
+                                if(key in options){
+                                    console.log('valid property "' + key + '" found in object. Overriding it to "' + data.options[key] + '"');
+                                    options.key = data.options[key];
+                                }
+                            }
                         }
 
                         $.each(data.links, function(key, link_prop){
@@ -582,7 +595,6 @@
                         });
 
                         $.each(data.links_1way, function(key, link_prop){
-                            console.log('links_1way');
                             draw_link_1way(link_prop);
                         });
 

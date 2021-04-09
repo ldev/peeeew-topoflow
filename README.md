@@ -17,7 +17,7 @@ Will soon utilize the excellent graphics from the ecceman's affinity repo for ne
 # Sample images
 ![BGP state machine as example](/example-images/example-bgp-state-machine.png)
 
-![Sample network topology](/example-images/example-bgp-state-machine.png)
+![Sample network topology](/example-images/example-topology.png)
 
 
 # Sample JSON file
@@ -57,7 +57,7 @@ Will soon utilize the excellent graphics from the ecceman's affinity repo for ne
 ```
 
 
-# Todo
+# Todo (somewhat in prioritized order)
 1. Parsing the JSON object and calculating a new object. To be able to create multiple links, some being 1way and some being 2way
 2. Making the terms less network specific, as this could be used to other things than network topologies
 3. Implement overriding of default variables (colors, sizes etc.)
