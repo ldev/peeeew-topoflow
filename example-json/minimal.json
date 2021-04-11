@@ -1,0 +1,31 @@
+{
+  "nodes": {
+    "node 1": {
+      "x": 300,
+      "y": 500
+    },
+    "node 2": {
+      "x": 800,
+      "y": 500
+    },
+    "node 3": {
+      "x": 1300,
+      "y": 500
+    }
+  },
+  "links": [
+    {
+      "from": "node 1",
+      "to": "node 2",
+      "rate_out": "Some megabyters",
+      "rate_in": "Even more gigabyters"
+    }
+  ],
+  "links_1way": [
+    {
+      "from": "node 2",
+      "to": "node 3",
+      "rate": "12.3 G"
+    }
+  ]
+}

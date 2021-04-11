@@ -23,7 +23,8 @@ PS: No need to install anything :-)
 ![Sample network topology](/example-images/example-topology.png)
 
 
-# Sample JSON file
+# Minimal sample JSON file
+Located at example-json/minimal.json
 ```json
 {
   "options": {},
@@ -59,6 +60,11 @@ PS: No need to install anything :-)
 }
 ```
 
+Will give the following topology:
+![Minimal network topology](/example-images/example-minimal.png)
+
+
+
 
 # Todo (somewhat in prioritized order)
 1. Parsing the JSON object and calculating a new object. To be able to create multiple links, some being 1way and some being 2way
@@ -66,6 +72,7 @@ PS: No need to install anything :-)
 3. Implement overriding of default variables (colors, sizes etc.)
 4. Multiple links between nodes. Think link-aggregation
 5. Implement link offset
+6. Be consistent about ES6 (variable definitions "var" vs. "let"/"const")
 
 
 # Made by who

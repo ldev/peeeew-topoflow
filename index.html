@@ -1,12 +1,4 @@
-<?php
-    if(!isset($_GET['source'])){
-        header('Location: ?source=data.json');
-    }
-
-    foreach(glob("*.json") as $json_file){
-        echo '<a style="margin-right: 1em; font-size: 2em;" href="?source=' . $json_file . '">' . $json_file . '</a>';
-    }
-?><br><!DOCTYPE html>
+<br><!DOCTYPE html>
 <html>
     <head>
         <title>Weathermap test</title>
@@ -27,6 +19,21 @@
                 height: 100%;
                 font-size: 10px;
             }
+
+            /*
+                Only used for styling the JSON buttons
+            */
+            #json-selectors{
+                font-size: 2rem;
+                padding: 2rem;
+            }
+
+            #json-selectors a{
+                margin-right: 1rem;
+                padding: 1rem;
+                border: 1px solid #ddd;
+            }
+
             svg{
                 width: 1500px;
                 height: 1000px;
@@ -61,6 +68,13 @@
 
     </head>
     <body>
+        <div id="json-selectors">
+            Select JSON: <a href="?source=example-json/data.json">data.json</a>
+            <a href="?source=example-json/data-core.json">data-core.json</a>
+            <a href="?source=example-json/bgp-state-machine.json">bgp-state-machine.json</a>
+            <a href="?source=example-json/minimal.json">minimal.json</a>
+        </div>
+
         <svg id="canvas">
             <defs>
                 <svg id="router" width="100%" height="100%" viewBox="0 0 300 300" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
@@ -78,6 +92,19 @@
 
         <script>
             $( document ).ready(function() {
+                /*
+                    Some navigation haxxxing to make the buttons work
+                    This is not related to the functioning of peeew-topoflow at all
+                */
+                const queryString = window.location.search;
+                const urlParams = new URLSearchParams(queryString);
+                let json_source = urlParams.get('source');
+                if(json_source === null){
+                    json_source = 'example-json/data.json';
+                }
+
+
+
                 /*
                     colors
                 */
@@ -122,11 +149,14 @@
                     "link_text_rotation": true,
 
                     /*
-                        prevents the link text from being displayed upside down (180 degrees)
+                        Prevents the link text from being displayed upside down (180 degrees)
                     */
                     "link_text_prevent_upside_down": true,
 
-
+                    /*
+                        Then drawing multiple links between the same two nodes, this offset will be used to space the links evenly out.
+                    */
+                    "link_offset": 20,
 
                     /*
                         Not implemented yet
@@ -250,6 +280,44 @@
                     #                       #
                     #########################
                 */
+
+
+                /**
+                    * Will provide a list of link offset placements. This enables us to draw multiple links between nodes.
+                    * In the example "number_of_links" being 5 and "link_offset" being 10 will wield the following result: [-20, -10, 0, 10, 20].
+                    * If number_of_links === 1, the result will be [0] ("center the link")
+
+                    * @param {number} number_of_links: Number of links, to calculate the correct offset
+                    * @returns {list}: Offset values, from lowest to highest
+                */
+                function calculate_offsets(number_of_links){
+                    /*
+                        Prevents "division by zero" crash
+                    */
+                    if(number_of_links === 0){
+                        return false;
+                    }
+
+                    /*
+                        Quick and dirty "if its 1, lets just return the center position"
+                    */
+                    if(number_of_links === 1){
+                        return [0];
+                    }
+
+                    /*
+                        Do the calculations
+                    */
+                    let data = [];
+                    let half_link_offset = options.link_offset/2;
+                    let lowest_offset = (half_link_offset*number_of_links-half_link_offset)*-1;
+                    for (i = lowest_offset; i <= lowest_offset*-1; i += options.link_offset){
+                        data.push(i);
+                    }
+                    return data;
+                }
+
+
                 function draw_node(args){
                     /*
                         Validating args to confirm required node parameters
@@ -571,7 +639,7 @@
                 */
                 function run(){
                     console.log('run() called');
-                    $.getJSON('<?php echo $_GET['source']?>', {_: new Date().getTime()}, function(data){
+                    $.getJSON(json_source, {_: new Date().getTime()}, function(data){
                         // svg.selectAll(".svg_container").remove();
                         dataset = data;
 
