@@ -1,7 +1,10 @@
 {
   "options": {
-    "node_text_centered": true,
-    "link_text_rotation": false
+    "text": {
+      "node_position": "center",
+      "link_rotation": false
+    },
+    "node_radius": 60
   },
   "nodes": {
     "Establised": {

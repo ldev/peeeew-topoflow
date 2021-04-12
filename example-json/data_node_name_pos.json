@@ -29,7 +29,8 @@
 
     "00a-core-agg-1": {
       "x": 100,
-      "y": 400
+      "y": 400,
+      "text_posistion" : "top"
     },
     "00b-core-agg-1": {
       "x": 1300,

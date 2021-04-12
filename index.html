@@ -1,4 +1,4 @@
-<br><!DOCTYPE html>
+<!DOCTYPE html>
 <html>
     <head>
         <title>Weathermap test</title>
@@ -37,30 +37,18 @@
             svg{
                 width: 1500px;
                 height: 1000px;
-                background-color: #000;
             }
                 svg .link-text{
-                    fill: #f0a;
                     font-size: 1.5rem;
                 }
 
                 svg .node-text{
                     font-size: 1.5rem;
                     font-weight: bold;
-                    fill: #fff;
-                }
-
-                svg .link{
-                    stroke: #fff;
-                }
-
-                svg .arrow{
-                    fill: #fff;
                 }
 
                 svg .link-down{
                     stroke-dasharray: 10;
-                    stroke: #f00;
                 }
         </style>
 
@@ -91,7 +79,7 @@
         </svg>
 
         <script>
-            $( document ).ready(function() {
+            $(document).ready(function(){
                 /*
                     Some navigation haxxxing to make the buttons work
                     This is not related to the functioning of peeew-topoflow at all
@@ -104,76 +92,96 @@
                 }
 
 
+                /*
+                    Initialize the SVG element
+                */
+                let svg_container = d3.select("#canvas");
+                let main_group = svg_container.append("g")
+                    .attr('class', 'main_group');
+                let svg = main_group;
+
+
+
 
                 /*
-                    colors
+                    #########################
+                    #                       #
+                    #       VARIABLES       #
+                    #                       #
+                    #########################
                 */
-                var color = {
-                    // 'link_text': '#ff0000',
-                    // 'link': '#fff',
-                    // 'node_text': '#fff',
-                    'circle_fill': '#000',
-                    'circle_outline': '#fff',
-                    'arrow_pointer': '#fff'
-                }
 
-                var svg_container = d3.select("#canvas");
-                var main_group = svg_container.append("g")
-                    .attr('class', 'main_group');
-                var svg = main_group;
-
-
-                /**
+                /*
                     Defines the default options for the maps. This is to be able to override options by each JSON source.
                 */
-                var options = {
+                let options = {
+                    /*
+                        All colors definitions goes here
+                    */
+                    'colors': {
+                        'circle_fill': '#000',
+                        'circle_outline': '#fff',
+                        'arrow_pointer': '#fff',
+                        'svg_background_color': '#000',
+                        'link': '#fff',
+                        'link_down': '#f00',
+                        'link_text': '#f0a',
+                        'node_text': '#fff',
+                        'arrow_pointer': '#fff'
+                    },
+
+                    /*
+                        All text/font properties goes here
+                    */
+                    'text': {
+                        /*
+                            Where node text position should be. Supported: 
+                                * bottom
+                                * <anything else than bottom> (which will be drawn centered)
+                        */
+                        'node_position': 'bottom',
+
+                        /*
+                            Whether or not the optional text on the links should be rotated along the link or not
+                            false: no rotation
+                            true: text is rotated along the link
+                        */
+                        'link_rotation': true,
+
+                        /*
+                            Prevents the link text from being displayed upside down (180 degrees)
+                        */
+                        'link_prevent_upside_down': true
+                    },
+
 
                     /*
                         Sets the radius of the node, if node type is not specified, or node type is "circle"
                         default: 40
                     */
-                    "node_radius": 40,
-
-                    /*
-                        Whether or not the node text should be below or centered within the node.
-                        false: below
-                        true: centered
-                    */
-                    "node_text_centered": false,
-
-                    /*
-                        Whether or not the optional text on the links should be rotated along the link or not
-                        false: no rotation
-                        true: text is rotated along the link
-                    */
-                    "link_text_rotation": true,
-
-                    /*
-                        Prevents the link text from being displayed upside down (180 degrees)
-                    */
-                    "link_text_prevent_upside_down": true,
+                    'node_radius': 40,
 
                     /*
                         Then drawing multiple links between the same two nodes, this offset will be used to space the links evenly out.
                     */
-                    "link_offset": 20,
+                    'link_offset': 20,
 
                     /*
                         Not implemented yet
                     */
-                    "display_fullscreen": false,
-                    "svg_width": 1500,
-                    "svg_height": 1000
+                    'display_fullscreen': false,
+                    'svg_width': 1500,
+                    'svg_height': 1000
                 };
 
 
                 // var node_radius = 40;
 
-                var markerBoxWidth = 20
-                var markerBoxHeight = 20
-                var arrowPoints = [[0, 0], [0, 20], [20, 10]];
+                let markerBoxWidth = 20
+                let markerBoxHeight = 20
+                let arrowPoints = [[0, 0], [0, 20], [20, 10]];
 
-                var dataset_suggested_format = {
+                let dataset_suggested_format = {
                     "links": [
                         {
                             "from": "00a-core-1",
@@ -243,13 +251,13 @@
                     dataset.nodes.blabla
                     dataset.links.blabla
                 */
-                var dataset = {};
+                let dataset = {};
 
 
                 /*
                     Required parameters for adding a node
                 */
-                var required_node_parameters = [
+                let required_node_parameters = [
                     'x', // x coordinate
                     'y', // y coordinate
                     'name' // name of node
@@ -259,7 +267,7 @@
                 /*
                     Required parameters for adding a link
                 */
-                var required_link_parameters = [
+                let required_link_parameters = [
                     'x1', // start x coordinate
                     'y1', // start y coordinate
                     'x2', // end y coordinate
@@ -318,6 +326,12 @@
                 }
 
 
+                /**
+                    * Will draw a node on the map
+
+                    * @param {object}       Parameters. See "required_node_parameters" variable for list of required variables.
+                    * @return {boolean}     True on success, false on error (like missing parameters). Check console output for errors.
+                */
                 function draw_node(args){
                     /*
                         Validating args to confirm required node parameters
@@ -344,13 +358,13 @@
                         Add node
                     */
                     console.log('options.node_radius:' + options.node_radius);
-                    var node = svg.append("circle")
+                    let node = svg.append("circle")
                         .attr('cx', args.x)
                         .attr('cy', args.y)
                         .attr('r', options.node_radius)
                         .attr('stroke-width', 5)
-                        .attr('stroke', color.circle_outline)
-                        .style('fill', color.circle_fill)
+                        .attr('stroke', options.colors.circle_outline)
+                        .style('fill', options.colors.circle_fill)
                         .attr('data-node-name', 'asdf')
                         .on("click", function(){
                             console.log(d3.select(this));
@@ -358,17 +372,15 @@
                         .on("mouseover", function(d) {
                             d3.select(this).style("fill", "#3236a8");
                         }).on("mouseout", function(d) {
-                            d3.select(this).style("fill", color.circle_fill);
+                            d3.select(this).style("fill", options.colors.circle_fill);
                         });
 
                     /*
                         If the node text should be drawn in center of the node, or below.
-                        Defaults to below.
                     */
-                    if(options.node_text_centered === true){
-                        var node_text_location = args.y;
-                    }else{
-                        var node_text_location = args.y+(options.node_radius*1.4)
+                    let node_text_location = args.y;
+                    if(options.text.node_position === 'bottom'){
+                        node_text_location = args.y+(options.node_radius*1.4)
                     }
 
                     svg.append("text")
@@ -377,6 +389,7 @@
                         .attr('y', node_text_location)
                         .attr('text-anchor', 'middle')
                         .attr('dominant-baseline', 'middle')
+                        .style('fill', options.colors.node_text)
                         .text(args.name)
 
                     if('state' in args){
@@ -397,38 +410,38 @@
                     console.log(args);
 
                     //Global settings
-                    var split_point = 0.5;
-                    var text_pos = 0.5;
+                    let split_point = 0.5;
+                    let text_pos = 0.5;
 
-                    var midpoint_offset = 20;
+                    let midpoint_offset = 20;
 
-                    var from_node_pos_x = dataset.nodes[args.from].x;
-                    var from_node_pos_y = dataset.nodes[args.from].y;
+                    let from_node_pos_x = dataset.nodes[args.from].x;
+                    let from_node_pos_y = dataset.nodes[args.from].y;
 
-                    var to_node_pos_x = dataset.nodes[args.to].x;
-                    var to_node_pos_y = dataset.nodes[args.to].y;
+                    let to_node_pos_x = dataset.nodes[args.to].x;
+                    let to_node_pos_y = dataset.nodes[args.to].y;
 
 
 
-                    var halfway_pos_x = to_node_pos_x-(to_node_pos_x-from_node_pos_x)*split_point;
-                    var halfway_pos_y = to_node_pos_y-(to_node_pos_y-from_node_pos_y)*split_point;
+                    let halfway_pos_x = to_node_pos_x-(to_node_pos_x-from_node_pos_x)*split_point;
+                    let halfway_pos_y = to_node_pos_y-(to_node_pos_y-from_node_pos_y)*split_point;
 
                     /*
                         Calculate the angle of the line. used to rotate the text to fit inside the arrow line
                         https://stackoverflow.com/questions/34293488/d3-find-the-angle-of-line
                     */
-                    var angle_a_to_b = Math.atan2(to_node_pos_y - from_node_pos_y, to_node_pos_x - from_node_pos_x);
-                    var degrees = angle_a_to_b*(180/Math.PI)
+                    let angle_a_to_b = Math.atan2(to_node_pos_y - from_node_pos_y, to_node_pos_x - from_node_pos_x);
+                    let degrees = angle_a_to_b*(180/Math.PI)
 
 
                     /*
                         To flip the text rotation the easy way for humans to read (e.g. never upside down)
                     */
                     text_degrees = 0;
-                    if(options.link_text_rotation === true){
+                    if(options.text.link_rotation === true){
                         text_degrees = degrees;
 
-                        if(options.link_text_prevent_upside_down === true && text_degrees > 90 && text_degrees < 181){
+                        if(options.link_prevent_upside_down === true && text_degrees > 90 && text_degrees < 181){
                             text_degrees += 180;
                         }
                     }
@@ -437,9 +450,7 @@
                     /*
                         Assign rate (used bandwidth)
                     */
-                    // var tx_rate = Math.floor(Math.random() * 10000) + ' Mb/s';
-                    // var rx_rate = Math.floor(Math.random() * 10000) + ' Mb/s';
-                    var rate_in = '',
+                    let rate_in = '',
                         rate_out = '';
 
                     if('rate_in' in args){
@@ -453,31 +464,36 @@
                     /*
                         Assign state
                     */
-
+                    let link_state = 'up';
                     if('state' in args){
                         if(args.state == 'down'){
-                            var link_state = 'down';
+                            link_state = 'down';
                         }
-                    }else{
-                        var link_state = 'up';
                     }
 
                     /*
                         A -> B
                     */
-                    svg
+                    let newly_created_link = svg
                         .append('line')
                             .attr('class', 'link link-' + link_state)
                             .attr('x1', from_node_pos_x)
                             .attr('y1', from_node_pos_y)
                             .attr('x2', halfway_pos_x - Math.cos(angle_a_to_b) * midpoint_offset)
                             .attr('y2', halfway_pos_y - Math.sin(angle_a_to_b) * midpoint_offset)
-                            .attr('stroke', color.link)
+                            .attr('stroke', options.colors.link)
                             .attr('stroke-width', 20)
                             .attr('marker-end', 'url(#arrow)')
                             .on("click", function(){
                                 console.log(d3.select(this).attr('y1'));
                             });
+
+                    /*
+                        Draw link as "link down"
+                    */
+                    if(link_state == 'down'){
+                        newly_created_link.attr('stroke', options.colors.link_down);
+                    }
 
                     /*
                         B -> A
@@ -489,84 +505,95 @@
                             .attr('y1', to_node_pos_y)
                             .attr('x2', halfway_pos_x- Math.cos(angle_a_to_b + Math.PI) * midpoint_offset)
                             .attr('y2', halfway_pos_y- Math.sin(angle_a_to_b + Math.PI) * midpoint_offset)
-                            .attr('stroke', color.link)
+                            .attr('stroke', options.colors.link)
                             .attr('stroke-width', 20)
                             .attr('marker-end', 'url(#arrow)')
                             .on("mouseover", function(d) {
                                 d3.select(this).style("stroke", "#3236a8");
                             })
                             .on("mouseout", function(d) {
-                                d3.select(this).style("stroke", color.link);
+                                d3.select(this).style("stroke", options.colors.link);
                             })
                             .on("click", function(){
                                 console.log(d3.select(this).attr('y1'));
                             });
 
-                    /*
-                        Text on A -> B
-                    */
+
                     if(link_state !== 'down'){
-                        svg.append("text")
-                            .attr('class', 'link-text')
-                            .attr('x', from_node_pos_x+((to_node_pos_x-from_node_pos_x)*split_point*text_pos))
-                            .attr('y', from_node_pos_y+((to_node_pos_y-from_node_pos_y)*split_point*text_pos))
-                            .attr('transform', 'rotate(' + text_degrees + ', ' + (from_node_pos_x+((to_node_pos_x-from_node_pos_x)*split_point*text_pos)) + ', ' + (from_node_pos_y+((to_node_pos_y-from_node_pos_y)*split_point*text_pos)) + ')') // rotates the text
-                            .attr('text-anchor', 'middle')
-                            .attr('dominant-baseline', 'middle')
-                            .text(rate_out)
+
+                        /*
+                            Text on A -> B
+                        */
+                        draw_text_on_link({
+                            x: from_node_pos_x+((to_node_pos_x-from_node_pos_x)*split_point*text_pos),
+                            y: from_node_pos_y+((to_node_pos_y-from_node_pos_y)*split_point*text_pos),
+                            text: rate_in
+                        });
 
                         /*
                             Text on B -> A
                         */
-                        svg.append("text")
-                            .attr('class', 'link-text')
-                            .attr('x', to_node_pos_x-((to_node_pos_x-from_node_pos_x)*split_point*text_pos))
-                            .attr('y', to_node_pos_y-((to_node_pos_y-from_node_pos_y)*split_point*text_pos))
-                            .attr('transform', 'rotate(' + text_degrees + ', ' + (to_node_pos_x-((to_node_pos_x-from_node_pos_x)*split_point*text_pos)) + ', ' + (to_node_pos_y-((to_node_pos_y-from_node_pos_y)*split_point*text_pos)) + ')') // rotates the text
-                            .attr('text-anchor', 'middle')
-                            .attr('dominant-baseline', 'middle')
-                            .text(rate_in)
+                        draw_text_on_link({
+                            x: to_node_pos_x-((to_node_pos_x-from_node_pos_x)*split_point*text_pos),
+                            y: to_node_pos_y-((to_node_pos_y-from_node_pos_y)*split_point*text_pos),
+                            text: rate_out
+                        });
                     }
                 }
 
 
                 /**
-                    Used for placing text on links
-                    @param {object} args: must contain 'x', 'y' and 'text'
+                    * Used for placing text on links
+                    * @param {object} args: must contain 'x', 'y' and 'text'
+                    * @return {boolean}
                 */
                 function draw_text_on_link(args){
-
+                    svg.append("text")
+                        .attr('class', 'link-text')
+                        .attr('x', args.x)
+                        .attr('y', args.y)
+                        .attr('transform', 'rotate(' + text_degrees + ', ' + (args.x) + ', ' + (args.y) + ')') // rotates the text
+                        .attr('text-anchor', 'middle')
+                        .attr('dominant-baseline', 'middle')
+                        .style('fill', options.colors.link_text)
+                        .text(args.text)
+                    return true;
                 }
 
+
+                /*
+                    * Used for drawing a 1 way link
+                    * @param 
+                */
                 function draw_link_1way(args){
                     console.log('Drawing 1way link from ' + args.from + ' to ' + args.to);
                     console.log(args);
 
                     //Global settings
 
-                    var text_pos = 0.5;
-                    var rotate_text = true; 
+                    let text_pos = 0.5;
+                    let rotate_text = true; 
+                    let link_state = '';
 
-                    var from_node_pos_x = dataset.nodes[args.from].x;
-                    var from_node_pos_y = dataset.nodes[args.from].y;
+                    console.log(dataset.nodes);
+                    let from_node_pos_x = dataset.nodes[args.from].x;
+                    let from_node_pos_y = dataset.nodes[args.from].y;
 
-                    var to_node_pos_x = dataset.nodes[args.to].x;
-                    var to_node_pos_y = dataset.nodes[args.to].y;
+                    let to_node_pos_x = dataset.nodes[args.to].x;
+                    let to_node_pos_y = dataset.nodes[args.to].y;
 
-                    var angle_a_to_b = Math.atan2(to_node_pos_y - from_node_pos_y, to_node_pos_x - from_node_pos_x);
-                    var degrees = angle_a_to_b*(180/Math.PI)
+                    let angle_a_to_b = Math.atan2(to_node_pos_y - from_node_pos_y, to_node_pos_x - from_node_pos_x);
+                    let degrees = angle_a_to_b*(180/Math.PI)
 
                     /*
                         To flip the text rotation the easy way for humans to read (e.g. never upside down)
                     */
-                    
+                    let text_degrees = 0;
                     if(rotate_text != false){
                         text_degrees = degrees;
                         if(text_degrees > 90 && text_degrees < 181){
                             text_degrees += 180;
                         }
-                    }else{
-                        text_degrees = 0;
                     }
 
                     /*
@@ -575,10 +602,10 @@
 
                     if('state' in args){
                         if(args.state == 'down'){
-                            var link_state = 'down';
+                            link_state = 'down';
                         }
                     }else{
-                        var link_state = 'up';
+                        link_state = 'up';
                     }
 
                     /*
@@ -591,7 +618,7 @@
                             .attr('y1', from_node_pos_y)
                             .attr('x2', to_node_pos_x- (Math.cos(angle_a_to_b) * (options.node_radius+25)))
                             .attr('y2', to_node_pos_y - (Math.sin(angle_a_to_b) * (options.node_radius+25)))
-                            .attr('stroke', color.link)
+                            .attr('stroke', options.colors.link)
                             .attr('stroke-width', 20)
                             .attr('marker-end', 'url(#arrow)')
                             .on("click", function(){
@@ -604,34 +631,15 @@
                             Draw text
                         */
                         if(link_state !== 'down'){
-                            svg.append("text")
-                                .attr('class', 'link-text')
-                                .attr('x', from_node_pos_x+((to_node_pos_x-from_node_pos_x)*text_pos))
-                                .attr('y', from_node_pos_y+((to_node_pos_y-from_node_pos_y)*text_pos))
-                                .attr('transform', 'rotate(' + text_degrees + ', ' + (from_node_pos_x+((to_node_pos_x-from_node_pos_x)*text_pos)) + ', ' + (from_node_pos_y+((to_node_pos_y-from_node_pos_y)*text_pos)) + ')') // rotates the text
-                                .attr('text-anchor', 'middle')
-                                .attr('dominant-baseline', 'middle')
-                                .text(args.rate)
+                            draw_text_on_link({
+                                x: from_node_pos_x+((to_node_pos_x-from_node_pos_x)*text_pos),
+                                y: from_node_pos_y+((to_node_pos_y-from_node_pos_y)*text_pos),
+                                text: args.rate
+                            });
                         }
                     }
                 }
 
-                d3.select("defs")
-                    .append('marker')
-                        .attr('id', 'arrow')
-                        .attr('class', 'arrow')
-                        .attr('viewBox', [0, 0, markerBoxWidth, markerBoxHeight])
-                        .attr('refX', 1) // 1 point overlap on marker and line
-                        .attr('refY', 10)
-                        .attr('markerWidth', markerBoxWidth)
-                        .attr('markerHeight', markerBoxHeight)
-                        .attr('orient', 'auto-start-reverse')
-                        .attr('markerUnits', 'userSpaceOnUse') // Needed, or the arrow head will inherit the stroke-width of the line "parent"
-                        // .attr('fill', '#f0a')
-                        .append('path')
-                            .attr('d', d3.line()(arrowPoints))
-                            // .attr('stroke', color.arrow_pointer)
-                            // .attr('fill', '#f0a');
 
                 /*
                     Populate the dataset
@@ -643,20 +651,31 @@
                         // svg.selectAll(".svg_container").remove();
                         dataset = data;
 
-                        console.log(data);
+                        console.log('data loaded from json file', data);
 
-                        /*
-                            Conditionally overrides the default options from the options in the loaded JSON object "data"
-                            Will only override if the option is already defined in the "options" object
+                        /**
+                            * Conditionally overrides the default options from the options in the loaded JSON object "data"
+                            * Will only override if the option is already defined in the "options" object
+                            @todo Fix ugly hax, actually iterate recursively through object
                         */
                         if('options' in data){
-                            for([key, value] of Object.entries(data.options)) {
-                                if(key in options){
-                                    console.log('valid property "' + key + '" found in object. Overriding it to "' + data.options[key] + '"');
-                                    options.key = data.options[key];
+                            for([key, value] of Object.entries(data.options)){
+                                console.log(key, value);
+                                
+                                // Check if the value is an object
+                                if(key in options && typeof value === 'object' && value !== null){
+                                    for([key2, value2] of Object.entries(data.options[key])){
+                                        console.log(key2, value2);
+                                        options[key][key2] = data.options[key][key2];
+                                    }
+                                }else if(key in options){
+                                    options[key] = data.options[key];
                                 }
+                                
                             }
                         }
+
+                        console.log('options now', options);
 
                         $.each(data.links, function(key, link_prop){
                             //Identify multiple links
@@ -676,6 +695,48 @@
                         });
                     });
                 }
+
+
+
+
+
+                /*
+                    ################################
+                    #                              #
+                    #       SEQUENCIAL BLOCK       #
+                    #     Setting up the stuff     #
+                    #                              #
+                    ################################
+                */
+
+                /*
+                    Create marker(s)
+                */
+                d3.select("defs")
+                    .append('marker')
+                        .attr('id', 'arrow')
+                        .attr('class', 'arrow')
+                        .attr('viewBox', [0, 0, markerBoxWidth, markerBoxHeight])
+                        .attr('refX', 1) // 1 point overlap on marker and line
+                        .attr('refY', 10)
+                        .attr('markerWidth', markerBoxWidth)
+                        .attr('markerHeight', markerBoxHeight)
+                        .attr('orient', 'auto-start-reverse')
+                        .attr('markerUnits', 'userSpaceOnUse') // Needed, or the arrow head will inherit the stroke-width of the line "parent"
+                        .attr('fill', options.colors.arrow_pointer)
+                        .append('path')
+                            .attr('d', d3.line()(arrowPoints));
+
+                /*
+                    changing the color of the SVG object, as defined in options.colors
+                */
+                svg_container.style('background-color', options.colors.svg_background_color);
+
+
+
+                /*
+                    Do the magic!
+                */
                 run();
                 /*
                 setInterval(function() {
@@ -683,10 +744,6 @@
                 }, 5000);
                 */
             });
-
-
         </script>
-
-
     </body>
 </html>

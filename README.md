@@ -27,7 +27,6 @@ PS: No need to install anything :-)
 Located at example-json/minimal.json
 ```json
 {
-  "options": {},
   "nodes": {
     "node 1": {
       "x": 300,
@@ -60,19 +59,16 @@ Located at example-json/minimal.json
 }
 ```
 
+
 Will give the following topology:
 ![Minimal network topology](/example-images/example-minimal.png)
-
-
 
 
 # Todo (somewhat in prioritized order)
 1. Parsing the JSON object and calculating a new object. To be able to create multiple links, some being 1way and some being 2way
 2. Making the terms less network specific, as this could be used to other things than network topologies
-3. Implement overriding of default variables (colors, sizes etc.)
 4. Multiple links between nodes. Think link-aggregation
 5. Implement link offset
-6. Be consistent about ES6 (variable definitions "var" vs. "let"/"const")
 
 
 # Made by who
