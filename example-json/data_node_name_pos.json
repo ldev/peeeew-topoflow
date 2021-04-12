@@ -1,7 +1,7 @@
 {
   "options": {
     "text": {
-      "link_rotation": true,
+      "link_follow_angle": true,
       "link_prevent_upside_down": true
     }
   },

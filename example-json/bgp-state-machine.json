@@ -2,7 +2,7 @@
   "options": {
     "text": {
       "node_position": "center",
-      "link_rotation": false
+      "link_follow_angle": false
     },
     "node_radius": 60
   },

@@ -146,7 +146,7 @@
                             false: no rotation
                             true: text is rotated along the link
                         */
-                        'link_rotation': true,
+                        'link_follow_angle': true,
 
                         /*
                             Prevents the link text from being displayed upside down (180 degrees)
@@ -437,11 +437,11 @@
                     /*
                         To flip the text rotation the easy way for humans to read (e.g. never upside down)
                     */
-                    text_degrees = 0;
-                    if(options.text.link_rotation === true){
+                    let text_degrees = 0;
+                    if(options.text.link_follow_angle === true){
                         text_degrees = degrees;
 
-                        if(options.link_prevent_upside_down === true && text_degrees > 90 && text_degrees < 181){
+                        if(options.text.link_prevent_upside_down === true && text_degrees > 90 && text_degrees <= 180){
                             text_degrees += 180;
                         }
                     }
@@ -519,6 +519,9 @@
                             });
 
 
+                    /*
+                        Do not draw text on links if the link is down
+                    */
                     if(link_state !== 'down'){
 
                         /*
@@ -527,7 +530,8 @@
                         draw_text_on_link({
                             x: from_node_pos_x+((to_node_pos_x-from_node_pos_x)*split_point*text_pos),
                             y: from_node_pos_y+((to_node_pos_y-from_node_pos_y)*split_point*text_pos),
-                            text: rate_in
+                            text: rate_in,
+                            degrees: text_degrees
                         });
 
                         /*
@@ -536,7 +540,8 @@
                         draw_text_on_link({
                             x: to_node_pos_x-((to_node_pos_x-from_node_pos_x)*split_point*text_pos),
                             y: to_node_pos_y-((to_node_pos_y-from_node_pos_y)*split_point*text_pos),
-                            text: rate_out
+                            text: rate_out,
+                            degrees: text_degrees
                         });
                     }
                 }
@@ -548,11 +553,11 @@
                     * @return {boolean}
                 */
                 function draw_text_on_link(args){
-                    svg.append("text")
+                    let newly_drawn_text = svg.append("text")
                         .attr('class', 'link-text')
                         .attr('x', args.x)
                         .attr('y', args.y)
-                        .attr('transform', 'rotate(' + text_degrees + ', ' + (args.x) + ', ' + (args.y) + ')') // rotates the text
+                        .attr('transform', 'rotate(' + args.degrees + ', ' + (args.x) + ', ' + (args.y) + ')') // rotates the text
                         .attr('text-anchor', 'middle')
                         .attr('dominant-baseline', 'middle')
                         .style('fill', options.colors.link_text)
@@ -589,9 +594,10 @@
                         To flip the text rotation the easy way for humans to read (e.g. never upside down)
                     */
                     let text_degrees = 0;
-                    if(rotate_text != false){
+                    if(options.text.link_follow_angle === true){
                         text_degrees = degrees;
-                        if(text_degrees > 90 && text_degrees < 181){
+
+                        if(options.text.link_prevent_upside_down === true && text_degrees > 90 && text_degrees <= 180){
                             text_degrees += 180;
                         }
                     }
@@ -634,7 +640,8 @@
                             draw_text_on_link({
                                 x: from_node_pos_x+((to_node_pos_x-from_node_pos_x)*text_pos),
                                 y: from_node_pos_y+((to_node_pos_y-from_node_pos_y)*text_pos),
-                                text: args.rate
+                                text: args.rate,
+                                degrees: text_degrees
                             });
                         }
                     }
