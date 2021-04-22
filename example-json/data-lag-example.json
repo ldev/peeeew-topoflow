@@ -1,0 +1,76 @@
+{
+    "links": [
+        {
+            "from": "00a-core-1",
+            "to": "00b-core-1",
+            "rate_out": "1",
+            "rate_in": "10"
+        },
+        {
+            "from": "00a-core-1",
+            "to": "00a-core-2",
+            "rate_out": "2",
+            "rate_in": "11"
+        },
+        {
+            "from": "00a-core-2",
+            "to": "00b-core-2",
+            "rate_out": "3",
+            "rate_in": "12"
+        },
+        {
+            "from": "00a-core-2",
+            "to": "00a-core-1",
+            "rate_out": "4",
+            "rate_in": "13"
+        },
+        {
+            "from": "00b-core-1",
+            "to": "00b-core-2",
+            "rate_out": "5",
+            "rate_in": "14"
+        },
+        {
+            "from": "00b-core-1",
+            "to": "00b-core-2",
+            "rate_out": "6",
+            "rate_in": "15"
+        },
+        {
+            "from": "00b-core-1",
+            "to": "00b-core-2",
+            "rate_out": "7",
+            "rate_in": "16"
+        },
+        {
+            "from": "00b-core-1",
+            "to": "00b-core-2",
+            "rate_out": "8",
+            "rate_in": "17"
+        },
+        {
+            "from": "00b-core-2",
+            "to": "00b-core-1",
+            "rate_out": "9",
+            "rate_in": "18"
+        }
+    ],
+    "nodes": {
+        "00a-core-1": {
+            "x": 500,
+            "y": 100
+        },
+        "00a-core-2": {
+            "x": 500,
+            "y": 400
+        },
+        "00b-core-1": {
+            "x": 900,
+            "y": 100
+        },
+        "00b-core-2": {
+            "x": 900,
+            "y": 400
+        }
+    }
+}

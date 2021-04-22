@@ -61,6 +61,7 @@
             <a href="?source=example-json/data-core.json">data-core.json</a>
             <a href="?source=example-json/bgp-state-machine.json">bgp-state-machine.json</a>
             <a href="?source=example-json/minimal.json">minimal.json</a>
+            <a href="?source=example-json/data-lag-example.json">data-lag-example.json</a>
         </div>
 
         <svg id="canvas">
@@ -121,6 +122,7 @@
                     'colors': {
                         'circle_fill': '#000',
                         'circle_outline': '#fff',
+                        'circle_outline_down': '#f00',
                         'arrow_pointer': '#fff',
                         'svg_background_color': '#000',
                         'link': '#fff',
@@ -136,8 +138,8 @@
                     'text': {
                         /*
                             Where node text position should be. Supported: 
-                                * bottom
-                                * <anything else than bottom> (which will be drawn centered)
+                                * bottom, top, right, left
+                                * <anything else> (which will be drawn centered)
                         */
                         'node_position': 'bottom',
 
@@ -180,6 +182,16 @@
                 let markerBoxWidth = 20
                 let markerBoxHeight = 20
                 let arrowPoints = [[0, 0], [0, 20], [20, 10]];
+
+
+                /*
+                    New, "experimental" dataset
+                */
+                let main_dataset = {
+                    'links': [],
+                    'nodes': []
+                };
+
 
                 let dataset_suggested_format = {
                     "links": [
@@ -376,18 +388,40 @@
                         });
 
                     /*
-                        If the node text should be drawn in center of the node, or below.
+                        Where the node text is supposed be drawn.
                     */
-                    let node_text_location = args.y;
-                    if(options.text.node_position === 'bottom'){
-                        node_text_location = args.y+(options.node_radius*1.4)
+                    let node_text_location_y = args.y;
+                    let node_text_location_x = args.x;
+                    let text_anchor = 'middle';
+                    let text_position = args.text_position;
+
+                    if(args.text_position == null){
+                        text_position = options.text.node_position;
                     }
+            
+                    if(text_position === 'bottom'){
+                        node_text_location_y = args.y+(options.node_radius*1.4)
+                    }else if(text_position === 'top'){
+                        node_text_location_y = args.y-(options.node_radius*1.4)
+                    }else if(text_position === 'right'){
+                        node_text_location_x = args.x+(options.node_radius*1.4)
+                        text_anchor = 'start';
+                    }else if(text_position === 'left'){
+                        node_text_location_x = args.x-(options.node_radius*1.4)
+                        text_anchor = 'end';
+                    }else{
+                        text_anchor = 'middle';
+                    }
+
+                    /*
+                        Draw text.
+                    */
 
                     svg.append("text")
                         .attr('class', 'node-text')
-                        .attr('x', args.x)
-                        .attr('y', node_text_location)
-                        .attr('text-anchor', 'middle')
+                        .attr('x', node_text_location_x)
+                        .attr('y', node_text_location_y)
+                        .attr('text-anchor', text_anchor)
                         .attr('dominant-baseline', 'middle')
                         .style('fill', options.colors.node_text)
                         .text(args.name)
@@ -395,7 +429,7 @@
                     if('state' in args){
                         if(args.state == 'down'){
                             console.log('ROUTER DOWN');
-                            node.attr('stroke', '#f00');
+                            node.attr('stroke', options.colors.circle_outline_down);
                         }
                     }
                 }
@@ -426,10 +460,6 @@
                     let halfway_pos_x = to_node_pos_x-(to_node_pos_x-from_node_pos_x)*split_point;
                     let halfway_pos_y = to_node_pos_y-(to_node_pos_y-from_node_pos_y)*split_point;
 
-                    /*
-                        Calculate the angle of the line. used to rotate the text to fit inside the arrow line
-                        https://stackoverflow.com/questions/34293488/d3-find-the-angle-of-line
-                    */
                     let angle_a_to_b = Math.atan2(to_node_pos_y - from_node_pos_y, to_node_pos_x - from_node_pos_x);
                     let degrees = angle_a_to_b*(180/Math.PI)
 
@@ -474,7 +504,7 @@
                     /*
                         A -> B
                     */
-                    let newly_created_link = svg
+                    let link_a_b = svg
                         .append('line')
                             .attr('class', 'link link-' + link_state)
                             .attr('x1', from_node_pos_x)
@@ -489,16 +519,9 @@
                             });
 
                     /*
-                        Draw link as "link down"
-                    */
-                    if(link_state == 'down'){
-                        newly_created_link.attr('stroke', options.colors.link_down);
-                    }
-
-                    /*
                         B -> A
                     */
-                    svg
+                    let link_b_a = svg
                         .append('line')
                             .attr('class', 'link link-' + link_state)
                             .attr('x1', to_node_pos_x)
@@ -518,6 +541,13 @@
                                 console.log(d3.select(this).attr('y1'));
                             });
 
+                    /*
+                        Draw link as "link down"
+                    */
+                    if(link_state == 'down'){
+                        link_a_b.attr('stroke', options.colors.link_down);
+                        link_b_a.attr('stroke', options.colors.link_down);
+                    }
 
                     /*
                         Do not draw text on links if the link is down
@@ -660,6 +690,68 @@
 
                         console.log('data loaded from json file', data);
 
+
+                        /**
+                            * Populates a new "main dataset", which will make us be able to detect duplicate links
+                            @todo: Factor away the "exploding dataset". Will iterate over an object for each key in another object.
+                            @todo: More about the topic: https://stackoverflow.com/questions/13964155/get-javascript-object-from-array-of-objects-by-value-of-property
+                        */
+                        try{
+                            let state_machine_duplicate_link_detected = false;
+                            $.each(data.links, function(x1_index, y1){
+                                state_machine_duplicate_link_detected = false;
+                                // console.log('y1.from: ', y1.from);
+                                // console.log('y1.to: ', y1.to);
+
+                                // loop over each link in the json provided data
+                                $.each(main_dataset.links, function(x2_index, y2){
+                                    // if we've seen the [from, to] (or [to, from]) pair before, append to that
+                                    if((y2.to === y1.to && y2.from === y1.from) || (y2.to === y1.from && y2.from === y1.to)){
+                                        state_machine_duplicate_link_detected = true;
+                                        console.log("Duplicate link detected (" + y1.to + ", " + y1.from + "), x2_index (" + x2_index + ")");
+
+                                        // checkin if a -> b
+                                        if(y2.to === y1.to && y2.from === y1.from){
+                                            // console.log('replacing index (a->b) ' + x2_index);
+                                            main_dataset['links'][x2_index]['links'].push({
+                                                'type': '2way',
+                                                'state': 'up',
+                                                'rate_in': y1.rate_in,
+                                                'rate_out': y1.rate_out
+                                            })
+                                        }
+
+                                        // checkin if b -> a
+                                        if(y2.to === y1.from && y2.from === y1.to){
+                                            // console.log('replacing index (b->a) ' + x2_index);
+                                            main_dataset['links'][x2_index]['links'].push({
+                                                'type': '2way',
+                                                'state': 'up',
+                                                'rate_out': y1.rate_in, // reversed!
+                                                'rate_in': y1.rate_out // reversed!
+                                            })
+                                        }
+                                    }
+                                });
+                                if(state_machine_duplicate_link_detected === false){
+                                    main_dataset['links'].push({
+                                        'to': y1.to,
+                                        'from': y1.from,
+                                        'links': [{
+                                            'type': '2way',
+                                            'state': 'up',
+                                            'rate_in': y1.rate_in,
+                                            'rate_out': y1.rate_out
+                                        }]
+                                    });
+                                }
+                            });
+                            console.log('main_dataset:', main_dataset);
+                        }catch(error){
+                            console.error(error);
+                        }
+
+
                         /**
                             * Conditionally overrides the default options from the options in the loaded JSON object "data"
                             * Will only override if the option is already defined in the "options" object
@@ -684,9 +776,11 @@
 
                         console.log('options now', options);
 
+                        /*
                         $.each(data.links, function(key, link_prop){
                             //Identify multiple links
                         });
+                        */
 
                         $.each(data.links_1way, function(key, link_prop){
                             draw_link_1way(link_prop);
@@ -699,6 +793,8 @@
                         $.each(data.nodes, function(node_name, node_prop){
                             node_prop.name = node_name;
                             draw_node(node_prop);
+                            main_dataset['nodes'].push(node_prop);
+
                         });
                     });
                 }
