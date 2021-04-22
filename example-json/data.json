@@ -7,60 +7,62 @@
   },
   "nodes": {
     "00a-core-1": {
-      "x": 500,
+      "x": 550,
       "y": 100,
       "type": "router",
       "text_position" : "top"
     },
     "00a-core-2": {
-      "x": 500,
+      "x": 550,
       "y": 400,
-      "type": "router"
+      "type": "router",
+      "text_position" : "bottom-left"
     },
     "00b-core-1": {
-      "x": 900,
+      "x": 950,
       "y": 100,
       "type": "router",
       "text_position" : "top"
     },
     "00b-core-2": {
-      "x": 900,
+      "x": 950,
       "y": 400,
-      "type": "router"
+      "type": "router",
+      "text_position" : "pizza tastes great!"
     },
 
     "00a-core-agg-1": {
-      "x": 100,
+      "x": 150,
       "y": 400,
-      "text_position" : "top"
+      "text_position" : "top-left"
     },
     "00b-core-agg-1": {
-      "x": 1300,
+      "x": 1350,
       "y": 400,
-      "text_position" : "top"
+      "text_position" : "top-right"
     },
 
     "00a-fw-inet-1": {
-      "x": 100,
+      "x": 150,
       "y": 700
     },
     "00b-fw-inet-1": {
-      "x": 1300,
+      "x": 1350,
       "y": 700
     },
 
     "00a-gw-inet-1": {
-      "x": 450,
+      "x": 500,
       "y": 700,
       "state": "down"
     },
     "00b-gw-inet-1": {
-      "x": 950,
+      "x": 1000,
       "y": 700
     },
 
     "internjet": {
-      "x": 700,
+      "x": 750,
       "y": 900,
       "type": "cloud"
     }

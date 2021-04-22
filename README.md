@@ -67,8 +67,9 @@ Will give the following topology:
 # Todo (somewhat in prioritized order)
 1. Parsing the JSON object and calculating a new object. To be able to create multiple links, some being 1way and some being 2way
 2. Making the terms less network specific, as this could be used to other things than network topologies
-4. Multiple links between nodes. Think link-aggregation
-5. Implement link offset
+3. Multiple links between nodes. (Think link-aggregation)
+4. Implement link offset
+5. Write documentation for all the possible values to use in a JSON file
 
 
 # Made by who

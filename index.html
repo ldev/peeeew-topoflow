@@ -153,7 +153,12 @@
                         /*
                             Prevents the link text from being displayed upside down (180 degrees)
                         */
-                        'link_prevent_upside_down': true
+                        'link_prevent_upside_down': true,
+
+                        /*
+                            Default offset of text to node. This is multiplied by "node_radius", to give the number of point the node text is 
+                        */
+                        'node_offset': 1.4
                     },
 
 
@@ -369,7 +374,6 @@
                     /*
                         Add node
                     */
-                    console.log('options.node_radius:' + options.node_radius);
                     let node = svg.append("circle")
                         .attr('cx', args.x)
                         .attr('cy', args.y)
@@ -390,33 +394,91 @@
                     /*
                         Where the node text is supposed be drawn.
                     */
-                    let node_text_location_y = args.y;
+                    let node_text_location_y = args.y+(options.node_radius*options.text.node_offset);
                     let node_text_location_x = args.x;
                     let text_anchor = 'middle';
                     let text_position = args.text_position;
 
-                    if(args.text_position == null){
+                    /**
+                        @todo: move out of the loop scope. It's here just to simplify visibility
+                    */
+                    let experimental_text_pos = {
+                        'top': {
+                            'position_y': args.y-(options.node_radius*options.text.node_offset)
+                        },
+                        'top-left': {
+                            'anchor': 'end',
+                            'position_x': args.x-(options.node_radius*options.text.node_offset*0.7),
+                            'position_y': args.y-(options.node_radius*options.text.node_offset*0.7)
+                        },
+                        'top-right': {
+                            'anchor': 'start',
+                            'position_x': args.x+(options.node_radius*options.text.node_offset*0.7),
+                            'position_y': args.y-(options.node_radius*options.text.node_offset*0.7)
+                        },
+                        'bottom': {
+                            'position_y': args.y+(options.node_radius*options.text.node_offset)
+                        },
+                        'bottom-left': {
+                            'anchor': 'end',
+                            'position_x': args.x-(options.node_radius*options.text.node_offset*0.7),
+                            'position_y': args.y+(options.node_radius*options.text.node_offset*0.7)
+                        },
+                        'bottom-right': {
+                            'anchor': 'start',
+                            'position_x': args.x+(options.node_radius*options.text.node_offset*0.7),
+                            'position_y': args.y+(options.node_radius*options.text.node_offset*0.7)
+                        },
+                        'right': {
+                            'anchor': 'start',
+                            'position_x': args.x+(options.node_radius*options.text.node_offset)
+                        },
+                        'left': {
+                            'anchor': 'end',
+                            'position_x': args.x-(options.node_radius*options.text.node_offset)
+                        },
+                    }
+                    if(args.text_position in experimental_text_pos){
+                        if('anchor' in experimental_text_pos[args.text_position]){
+                            text_anchor = experimental_text_pos[args.text_position]['anchor'];
+                        }
+
+                        if('position_x' in experimental_text_pos[args.text_position]){
+                            node_text_location_x = experimental_text_pos[args.text_position]['position_x'];
+                        }
+
+                        if('position_y' in experimental_text_pos[args.text_position]){
+                            node_text_location_y = experimental_text_pos[args.text_position]['position_y'];
+                        }
+                    }
+
+                    /*
+
+
+                    if(!('text_position' in args)){
                         text_position = options.text.node_position;
                     }
             
                     if(text_position === 'bottom'){
-                        node_text_location_y = args.y+(options.node_radius*1.4)
+                        node_text_location_y = args.y+(options.node_radius*options.text.node_offset)
                     }else if(text_position === 'top'){
-                        node_text_location_y = args.y-(options.node_radius*1.4)
+                        node_text_location_y = args.y-(options.node_radius*options.text.node_offset)
                     }else if(text_position === 'right'){
-                        node_text_location_x = args.x+(options.node_radius*1.4)
+                        node_text_location_x = args.x+(options.node_radius*options.text.node_offset)
                         text_anchor = 'start';
                     }else if(text_position === 'left'){
-                        node_text_location_x = args.x-(options.node_radius*1.4)
+                        node_text_location_x = args.x-(options.node_radius*options.text.node_offset)
                         text_anchor = 'end';
                     }else{
                         text_anchor = 'middle';
                     }
+                    */
+
+
 
                     /*
                         Draw text.
                     */
-
                     svg.append("text")
                         .attr('class', 'node-text')
                         .attr('x', node_text_location_x)
