@@ -7,7 +7,7 @@ Topology flowchart ("network weathermap"), with live values, drawn by SVG with y
 PS: No need to install anything :-)
 * Relies on D3 javascript library - https://d3js.org/. This is being loaded from the d3js CDN.
 * Will soon utilize the excellent graphics from the ecceman's affinity repo for network graphics - https://github.com/ecceman/affinity. The vector images we want to use will be included in the javascript directly (drawn by D3 into the SVG object).
-
+* Relies (... or does it?) on jQuery. This is being loaded from the jQuery CDN.
 
 
 # Why?

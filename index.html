@@ -198,7 +198,7 @@
                 };
 
 
-                let dataset_suggested_format = {
+                let main_dataset_suggested_format = {
                     "links": [
                         {
                             "from": "00a-core-1",
@@ -290,10 +290,6 @@
                     'x2', // end y coordinate
                     'y2' // end y coordinate
                 ]
-
-
-
-
 
 
 
@@ -393,16 +389,23 @@
 
                     /*
                         Where the node text is supposed be drawn.
+                        This is the default fallback, if nothing is defined in $text_pos_defs
                     */
                     let node_text_location_y = args.y+(options.node_radius*options.text.node_offset);
                     let node_text_location_x = args.x;
                     let text_anchor = 'middle';
                     let text_position = args.text_position;
 
-                    /**
-                        @todo: move out of the loop scope. It's here just to simplify visibility
+
+
+                    /*
+                        Text position definitions
+                        @todo: Separate function: draw_node_text(x, y, placement, text)
                     */
-                    let experimental_text_pos = {
+                    let text_pos_defs = {
+                        'center': {
+                            'position_y': args.y
+                        },
                         'top': {
                             'position_y': args.y-(options.node_radius*options.text.node_offset)
                         },
@@ -438,42 +441,47 @@
                             'position_x': args.x-(options.node_radius*options.text.node_offset)
                         },
                     }
-                    if(args.text_position in experimental_text_pos){
-                        if('anchor' in experimental_text_pos[args.text_position]){
-                            text_anchor = experimental_text_pos[args.text_position]['anchor'];
+
+                    /*
+                        override the default settings - e.g. "{options: {text: {node_position: xxx}}}" is set in the JSON object
+                    */
+                    if('options' in dataset && 'text' in dataset.options && 'node_position' in dataset.options.text){
+                        if(dataset.options.text.node_position in text_pos_defs){
+                            if('anchor' in text_pos_defs[dataset.options.text.node_position]){
+                                text_anchor = text_pos_defs[dataset.options.text.node_position]['anchor'];
+                            }
+
+                            if('position_x' in text_pos_defs[dataset.options.text.node_position]){
+                                node_text_location_x = text_pos_defs[dataset.options.text.node_position]['position_x'];
+                            }
+
+                            if('position_y' in text_pos_defs[dataset.options.text.node_position]){
+                                node_text_location_y = text_pos_defs[dataset.options.text.node_position]['position_y'];
+                            }
+                        }else{
+                            console.log('Unknown options.text.node_position, falling back');
+                        }
+                    }
+
+
+                    /*
+                        Override the previous text position settings if it's defined at the node level in the JSON file
+                    */
+                    if(args.text_position in text_pos_defs){
+                        if('anchor' in text_pos_defs[args.text_position]){
+                            text_anchor = text_pos_defs[args.text_position]['anchor'];
                         }
 
-                        if('position_x' in experimental_text_pos[args.text_position]){
-                            node_text_location_x = experimental_text_pos[args.text_position]['position_x'];
+                        if('position_x' in text_pos_defs[args.text_position]){
+                            node_text_location_x = text_pos_defs[args.text_position]['position_x'];
                         }
 
-                        if('position_y' in experimental_text_pos[args.text_position]){
-                            node_text_location_y = experimental_text_pos[args.text_position]['position_y'];
+                        if('position_y' in text_pos_defs[args.text_position]){
+                            node_text_location_y = text_pos_defs[args.text_position]['position_y'];
                         }
                     }
 
                     /*
-
-
-                    if(!('text_position' in args)){
-                        text_position = options.text.node_position;
-                    }
-            
-                    if(text_position === 'bottom'){
-                        node_text_location_y = args.y+(options.node_radius*options.text.node_offset)
-                    }else if(text_position === 'top'){
-                        node_text_location_y = args.y-(options.node_radius*options.text.node_offset)
-                    }else if(text_position === 'right'){
-                        node_text_location_x = args.x+(options.node_radius*options.text.node_offset)
-                        text_anchor = 'start';
-                    }else if(text_position === 'left'){
-                        node_text_location_x = args.x-(options.node_radius*options.text.node_offset)
-                        text_anchor = 'end';
-                    }else{
-                        text_anchor = 'middle';
-                    }
-                    */
-
 
 
                     /*
@@ -742,10 +750,10 @@
 
                 /*
                     Populate the dataset
-                    Prevent caching
                 */
                 function run(){
                     console.log('run() called');
+                    // prevent caching
                     $.getJSON(json_source, {_: new Date().getTime()}, function(data){
                         // svg.selectAll(".svg_container").remove();
                         dataset = data;
@@ -760,14 +768,14 @@
                         */
                         try{
                             let state_machine_duplicate_link_detected = false;
-                            $.each(data.links, function(x1_index, y1){
+
+                            // loop over each link object in the JSON dataset
+                            $.each(data.links, function(not_in_use, y1){
                                 state_machine_duplicate_link_detected = false;
-                                // console.log('y1.from: ', y1.from);
-                                // console.log('y1.to: ', y1.to);
 
                                 // loop over each link in the json provided data
                                 $.each(main_dataset.links, function(x2_index, y2){
-                                    // if we've seen the [from, to] (or [to, from]) pair before, append to that
+                                    // if we've seen the [from, to] or [to, from] pair before, append to that
                                     if((y2.to === y1.to && y2.from === y1.from) || (y2.to === y1.from && y2.from === y1.to)){
                                         state_machine_duplicate_link_detected = true;
                                         console.log("Duplicate link detected (" + y1.to + ", " + y1.from + "), x2_index (" + x2_index + ")");
@@ -808,6 +816,12 @@
                                     });
                                 }
                             });
+                            // Copy over the nodes from JSON data to $main_dataset
+                            if('nodes' in data){
+                                main_dataset.nodes = data.nodes;
+                            }else{
+                                console.log('no nodes found in JSON data');
+                            }
                             console.log('main_dataset:', main_dataset);
                         }catch(error){
                             console.error(error);
@@ -835,7 +849,6 @@
                                 
                             }
                         }
-
                         console.log('options now', options);
 
                         /*
@@ -844,20 +857,29 @@
                         });
                         */
 
-                        $.each(data.links_1way, function(key, link_prop){
+                        $.each(data.links_1way, function(not_in_use, link_prop){
                             draw_link_1way(link_prop);
                         });
 
-                        $.each(data.links, function(key, link_prop){
+                        $.each(data.links, function(not_in_use, link_prop){
                             draw_link(link_prop);
                         });
 
+                        /*
                         $.each(data.nodes, function(node_name, node_prop){
                             node_prop.name = node_name;
                             draw_node(node_prop);
                             main_dataset['nodes'].push(node_prop);
-
                         });
+                        */
+
+
+                        // Using the new dataset
+                        $.each(main_dataset.nodes, function(node_name, node_prop){
+                            node_prop.name = node_name;
+                            draw_node(node_prop);
+                        });
+
                     });
                 }
 
