@@ -19,13 +19,12 @@
       "to": "node 2",
       "rate_out": "Some megabyters",
       "rate_in": "Even more gigabyters"
-    }
-  ],
-  "links_1way": [
+    },
     {
       "from": "node 2",
       "to": "node 3",
-      "rate": "12.3 G"
+      "rate": "12.3 G",
+      "type": "1way"
     }
   ]
 }

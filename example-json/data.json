@@ -202,13 +202,12 @@
       "rate_out": "331Mbit",
       "rate_in": "331Mbit",
       "state": "up"
-    }
-  ],
-  "links_1way": [
+    },
     {
       "from": "00a-core-2",
       "to": "internjet",
-      "rate": "1333333337"
+      "rate": "1333333337",
+      "type": "1way"
     }
   ]
 }

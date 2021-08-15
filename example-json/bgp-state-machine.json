@@ -59,16 +59,14 @@
     {"from": "Idle", "to": "Loop Idle"},
     {"from": "Connect", "to": "Loop Conn."},
     {"from": "Active", "to": "Loop Act."},
-    {"from": "Openconf.", "to": "Loop Ope."}
-  ],
-  "links_1way": [
-    {"from": "Establised", "to": "Idle"},
-    {"from": "Idle", "to": "Connect"},
-    {"from": "Connect", "to": "Opensent"},
-    {"from": "Opensent", "to": "Openconf."},
-    {"from": "Opensent", "to": "Idle"},
-    {"from": "Active", "to": "Idle"},
-    {"from": "Openconf.", "to": "Establised"},
-    {"from": "Openconf.", "to": "Idle"}
+    {"from": "Openconf.", "to": "Loop Ope."},
+    {"from": "Establised", "to": "Idle", "type": "1way"},
+    {"from": "Idle", "to": "Connect", "type": "1way"},
+    {"from": "Connect", "to": "Opensent", "type": "1way"},
+    {"from": "Opensent", "to": "Openconf.", "type": "1way"},
+    {"from": "Opensent", "to": "Idle", "type": "1way"},
+    {"from": "Active", "to": "Idle", "type": "1way"},
+    {"from": "Openconf.", "to": "Establised", "type": "1way"},
+    {"from": "Openconf.", "to": "Idle", "type": "1way"}
   ]
 }
