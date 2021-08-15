@@ -4,7 +4,15 @@
       "node_position": "center",
       "link_follow_angle": false
     },
-    "node_radius": 60
+    "node_radius": 60,
+    "colors": {
+      "circle_fill": "#fff",
+      "circle_outline": "#000",
+      "arrow_pointer": "#aaa",
+      "svg_background_color": "#fff",
+      "link": "#000",
+      "node_text": "#aaa"
+    }
   },
   "nodes": {
     "Establised": {

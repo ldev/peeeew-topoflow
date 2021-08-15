@@ -46,8 +46,7 @@ $(document).ready(function(){
             'link': '#fff',
             'link_down': '#f00',
             'link_text': '#f0a',
-            'node_text': '#fff',
-            'arrow_pointer': '#fff'
+            'node_text': '#fff'
         },
 
         /*
@@ -798,8 +797,7 @@ $(document).ready(function(){
             */
 
 
-            console.log('main dataset:');
-            console.log(main_dataset);
+            console.log('main dataset: ' + main_dataset);
 
 
             /*
@@ -864,6 +862,11 @@ $(document).ready(function(){
     */
 
     /*
+        Do the magic!
+    */
+    run();
+
+    /*
         Create marker(s)
     */
     d3.select("defs")
@@ -881,17 +884,15 @@ $(document).ready(function(){
             .append('path')
                 .attr('d', d3.line()(arrowPoints));
 
+
     /*
         changing the color of the SVG object, as defined in options.colors
     */
+    console.error(options.colors.svg_background_color);
     svg_container.style('background-color', options.colors.svg_background_color);
 
 
-
-    /*
-        Do the magic!
-    */
-    run();
+    
     /*
     setInterval(function() {
         run();

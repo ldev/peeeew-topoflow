@@ -1,5 +1,5 @@
 # peeeew-topoflow
-Topology flowchart ("network weathermap"), with live values, drawn by SVG with your web browser. Relies on JSON files to feed topology/data.
+Topology flowchart ("network weathermap"), with live values, drawn by JavaScript and SVG with your web browser. Relies on JSON files to feed topology/data.
 
 **Disclaimer: This is not production ready in any way, we're still adding basic stuff and basicly making it work as intended.**
 
@@ -47,13 +47,12 @@ Located at example-json/minimal.json
       "to": "node 2",
       "rate_out": "Some megabyters",
       "rate_in": "Even more gigabyters"
-    }
-  ],
-  "links_1way": [
+    },
     {
       "from": "node 2",
       "to": "node 3",
-      "rate": "12.3 G"
+      "rate": "12.3 G",
+      "type": "1way"
     }
   ]
 }
@@ -65,10 +64,10 @@ Will give the following topology:
 
 
 # Todo (somewhat in prioritized order)
-1. Parsing the JSON object and calculating a new object. To be able to create multiple links, some being 1way and some being 2way
-2. Making the terms less network specific, as this could be used to other things than network topologies
-3. Multiple links between nodes. (Think link-aggregation)
-4. Implement link offset
+1. Multiple links between nodes. (Think link-aggregation)
+2. Implement link offset (needed for multiple links)
+3. Fix the custom color implementation (check out bgp-state-machine.json)
+4. Making the terms less network specific, as this could be used to other things than network topologies
 5. Write documentation for all the possible values to use in a JSON file
 
 
