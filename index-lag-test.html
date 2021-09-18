@@ -3,17 +3,12 @@
     <head>
         <title>peeeew-topoflow</title>
         <link href="/projects/peeeew-topoflow/favicon.ico" rel="icon" type="image/x-icon" />
-        <meta charset="UTF-8">
-
-        <!-- scripts -->
+        <meta charset="UTF-8"> 
         <script src="https://d3js.org/d3.v6.min.js"></script>
         <script
             src="https://code.jquery.com/jquery-3.6.0.min.js"
             integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
             crossorigin="anonymous"></script>
-        <script src="topoflow.js"></script>
-
-
 
         <style type="text/css">
             *{
@@ -62,6 +57,7 @@
 
     </head>
     <body>
+        <h1>LAG test</h1>
         <div id="json-selectors">
             Select JSON: <a href="?source=example-json/data.json">data.json</a>
             <a href="?source=example-json/data-core.json">data-core.json</a>
@@ -73,6 +69,10 @@
         <svg id="canvas">
             <defs>
                 <svg id="router" width="100%" height="100%" viewBox="0 0 300 300" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+                    <!--
+                        This is the router symbol from https://github.com/ecceman/affinity
+                        It's not in use yet
+                    -->
                     <g>
                         <circle cx="150" cy="150" r="150" style="fill:rgb(255,254,254);"/>
                         <path d="M150,0C232.787,0 300,67.213 300,150C300,232.787 232.787,300 150,300C67.213,300 0,232.787 0,150C0,67.213 67.213,0 150,0ZM150,16C223.957,16 284,76.043 284,150C284,223.957 223.957,284 150,284C76.043,284 16,223.957 16,150C16,76.043 76.043,16 150,16Z" style="fill:rgb(77,77,77);"/>
@@ -85,28 +85,10 @@
         </svg>
 
         
-        
+        <script src="topoflow-lag-test.js?a"></script>
         <script>
-
             $(document).ready(function(){
-                /**
-                    Some navigation haxxxing to make the buttons work
-                    This is not related to the functioning of peeew-topoflow at all
-                */
-                const queryString = window.location.search;
-                const urlParams = new URLSearchParams(queryString);
-                let json_source = urlParams.get('source');
-                if(json_source === null){
-                    json_source = 'example-json/data.json';
-                }
 
-                /*
-                    Execute topoflow code
-                */
-                let tf = new topoflow();
-                console.log('Finished creating topoflow() object');
-                tf.run(json_source);
-                d3.select("#canvas").style('background-color', '#000');
             });
         </script>
 

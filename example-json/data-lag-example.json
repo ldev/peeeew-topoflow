@@ -1,5 +1,23 @@
 {
+    "options": {
+        "link": {
+            "offset": 20,
+            "width": 10
+        }
+    },
     "links": [
+        {
+            "from": "00a-core-1",
+            "to": "00b-core-1",
+            "rate_out": "1",
+            "rate_in": "10"
+        },
+        {
+            "from": "00a-core-1",
+            "to": "00b-core-1",
+            "rate_out": "1",
+            "rate_in": "10"
+        },
         {
             "from": "00a-core-1",
             "to": "00b-core-1",
@@ -50,14 +68,20 @@
         },
         {
             "from": "00b-core-2",
-            "to": "00b-core-1",
-            "rate_out": "9",
-            "rate_in": "18"
+            "to": "00b-core-3",
+            "rate": "1333333337",
+            "type": "1way"
+        },
+        {
+            "from": "00b-core-2",
+            "to": "00b-core-3",
+            "rate": "1333333337",
+            "type": "1way"
         }
     ],
     "nodes": {
         "00a-core-1": {
-            "x": 500,
+            "x": 100,
             "y": 100,
             "text_position" : "top"
         },
@@ -73,6 +97,10 @@
         "00b-core-2": {
             "x": 900,
             "y": 400
+        },
+        "00b-core-3": {
+            "x": 500,
+            "y": 700
         }
     }
 }

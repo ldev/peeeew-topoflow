@@ -67,8 +67,10 @@ Will give the following topology:
 1. Multiple links between nodes. (Think link-aggregation)
 2. Implement link offset (needed for multiple links)
 3. Fix the custom color implementation (check out bgp-state-machine.json)
-4. Making the terms less network specific, as this could be used to other things than network topologies
-5. Write documentation for all the possible values to use in a JSON file
+4. Move the initializing ("run()") out of topoflow.js.
+5. Do "options" more modular, e.g. able to specify general options for all flow charts, JSON-loaded options for specific chart. This could be initialized before run().
+6. Making the terms less network specific, as topoflow could be used to other things than network topologies
+7. Write documentation for all the possible values to use in a JSON file
 
 
 # Made by who
