@@ -279,8 +279,6 @@ class topoflow{
         for (let i = lowest_offset; i <= lowest_offset*-1; i += this.options.link.offset){
             data.push(i);
         }
-        console.log('asdf');
-        console.log(data);
         return data;
     }
 
@@ -465,11 +463,10 @@ class topoflow{
     */
     draw_link(args){
         try{
-            console.log('Drawing regular (2way) link from ' + args.from + ' to ' + args.to + 'with the following args:');
-            console.log(args);
-            //console.log('offset: ' + args.offset);
+            console.log('Drawing regular (2way) link from ' + args.from + ' to ' + args.to);
+            // console.log(args);
 
-            //Global settings
+            // global settings
             let split_point = 0.5;
             let text_pos = 0.5;
             let arrow_offset =20;
@@ -554,8 +551,6 @@ class topoflow{
                         console.log(d3.select(this).attr('y1'));
                     }
             */
-            console.log('from_node_pos_x: ' + from_node_pos_x);
-            console.log(args);
 
             let link_a_b = this.svg
                 .append('line')
@@ -742,7 +737,16 @@ class topoflow{
         Each option will be overriden by the
     */
     set_default_options(args){
+        this.overwrite_options(args);
+    }
 
+    /*
+        Used for overwriting the default options.
+        Calling set_default_options() from class initialization overwrites the default options
+        "options" from the JSON file overwrites set_default_options()
+    */
+    overwrite_options(args){
+        // do stuff
     }
 
 
@@ -760,22 +764,22 @@ class topoflow{
             console.log('data loaded from json file', data);
 
             /**
-                * Populates a new "main dataset", which will make us be able to detect duplicate links
+                * Populates a new "main dataset", which will make us be able to detect multiple links
                 @todo: Factor away the "exploding dataset". Will iterate over an object for each key in another object.
                 @todo: More about the topic: https://stackoverflow.com/questions/13964155/get-javascript-object-from-array-of-objects-by-value-of-property
             */
             try{
                 // loop over each link object in the JSON dataset
                 $.each(data.links, function(not_in_use, y1){
-                    let state_machine_duplicate_link_detected = false;
+                    let state_machine_multiple_link_detected = false;
                     let link_type = y1.type || '2way';
 
                     // loop over each link in the json provided data
                     $.each(class_this.main_dataset.links, function(x2_index, y2){
                         // if we've seen the [from, to] or [to, from] pair before, append to that
                         if((y2.to === y1.to && y2.from === y1.from) || (y2.to === y1.from && y2.from === y1.to)){
-                            state_machine_duplicate_link_detected = true;
-                            console.log("Duplicate link detected (" + y1.to + ", " + y1.from + "), x2_index (" + x2_index + ")");
+                            state_machine_multiple_link_detected = true;
+                            console.log("Multiple link detected (" + y1.to + ", " + y1.from + "), x2_index (" + x2_index + ")");
 
                             // checkin if a -> b
                             if(y2.to === y1.to && y2.from === y1.from){
@@ -800,7 +804,7 @@ class topoflow{
                             }
                         }
                     });
-                    if(state_machine_duplicate_link_detected === false){
+                    if(state_machine_multiple_link_detected === false){
                         class_this.main_dataset['links'].push({
                             'to': y1.to,
                             'from': y1.from,
@@ -817,9 +821,8 @@ class topoflow{
                 if('nodes' in data){
                     class_this.main_dataset.nodes = data.nodes;
                 }else{
-                    console.error('no nodes found in JSON data');
+                    console.error('No nodes found in JSON data');
                 }
-                console.log('main_dataset:', class_this.main_dataset);
             }catch(error){
                 console.error(error);
             }
@@ -862,10 +865,6 @@ class topoflow{
                 });
             */
 
-
-            console.log('main dataset: ' + class_this.main_dataset);
-
-
             /*
                 Find the links in the dataset, and draw them
                 Note:_ the "main_dataset.links" is a bit unclear, as that is a collection of nodes, and in that a collection of link between nodes
@@ -876,14 +875,8 @@ class topoflow{
                 let number_of_links = link_props.links.length;
 
                 console.log('Processing a total of ' + number_of_links+ ' links from ' + link_to + ' to ' + link_from);
-                console.log('link_offset_array');
-                console.log(class_this.calculate_offsets(number_of_links));
                 let link_offset_array = class_this.calculate_offsets(number_of_links);
-                console.log('links offset:');
-                console.log(link_offset_array);
-                // let current_link_offset = 0; // Holds the current link offset. 0 = no offset
                 $.each(link_props.links, function(link_index, link){
-
                     /*
                         Draw each separate link
                     */

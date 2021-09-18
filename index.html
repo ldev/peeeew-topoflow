@@ -87,7 +87,6 @@
         
         
         <script>
-
             $(document).ready(function(){
                 /**
                     Some navigation haxxxing to make the buttons work
@@ -104,7 +103,7 @@
                     Execute topoflow code
                 */
                 let tf = new topoflow();
-                console.log('Finished creating topoflow() object');
+                tf.set_default_options({'colors': {'svg_background_color': '#f0a'}});
                 tf.run(json_source);
                 d3.select("#canvas").style('background-color', '#000');
             });
