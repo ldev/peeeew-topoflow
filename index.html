@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>peeeew-topoflow</title>
+        <title>Topoflow example code</title>
         <link href="/projects/peeeew-topoflow/favicon.ico" rel="icon" type="image/x-icon" />
         <meta charset="UTF-8">
 
@@ -11,7 +11,8 @@
             src="https://code.jquery.com/jquery-3.6.0.min.js"
             integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
             crossorigin="anonymous"></script>
-        <script src="topoflow.js"></script>
+
+        <script src="topoflow.js?a"></script>
 
 
 
@@ -27,7 +28,7 @@
             }
 
             /*
-                Only used for styling the JSON buttons
+               Styling the JSON buttons - e.g. not related to topoflow code
             */
             #json-selectors{
                 font-size: 2rem;
@@ -40,6 +41,9 @@
                 border: 1px solid #ddd;
             }
 
+            /*
+                Topoflow styling
+            */
             svg{
                 width: 1500px;
                 height: 1000px;
@@ -71,7 +75,9 @@
         </div>
 
         <svg id="canvas">
+
             <defs>
+                <!--
                 <svg id="router" width="100%" height="100%" viewBox="0 0 300 300" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
                     <g>
                         <circle cx="150" cy="150" r="150" style="fill:rgb(255,254,254);"/>
@@ -81,6 +87,7 @@
                         </g>
                     </g>
                 </svg>
+            -->
             </defs>
         </svg>
 
@@ -90,22 +97,27 @@
             $(document).ready(function(){
                 /**
                     Some navigation haxxxing to make the buttons work
-                    This is not related to the functioning of peeew-topoflow at all
+                    This is not related to the functioning of topoflow at all
                 */
-                const queryString = window.location.search;
-                const urlParams = new URLSearchParams(queryString);
+                const urlParams = new URLSearchParams(window.location.search);
                 let json_source = urlParams.get('source');
                 if(json_source === null){
                     json_source = 'example-json/data.json';
                 }
 
-                /*
+                /**
                     Execute topoflow code
                 */
                 let tf = new topoflow();
-                tf.set_default_options({'colors': {'svg_background_color': '#f0a'}});
+                tf.overwrite_options({
+                    'colors': {
+                        'svg_background_color': '#333',
+                        'circle_fill': '#333'
+                    },
+                    'node_radius': 60
+                });
                 tf.run(json_source);
-                d3.select("#canvas").style('background-color', '#000');
+                // d3.select("#canvas").style('background-color', '#000');
             });
         </script>
 

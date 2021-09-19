@@ -7,7 +7,7 @@ Topology flowchart ("network weathermap"), with live values, drawn by JavaScript
 PS: No need to install anything :-)
 * Relies on D3 javascript library - https://d3js.org/. This is being loaded from the d3js CDN.
 * Will soon utilize the excellent graphics from the ecceman's affinity repo for network graphics - https://github.com/ecceman/affinity. The vector images we want to use will be included in the javascript directly (drawn by D3 into the SVG object).
-* Relies (... or does it?) on jQuery. This is being loaded from the jQuery CDN.
+* Relies (... barely) on jQuery. This is being loaded from the jQuery CDN. Dependancy will probably be removed later on.
 
 
 # Why?
@@ -58,8 +58,37 @@ Located at example-json/minimal.json
 }
 ```
 
+# Minimal HTML example
+```html
+<!DOCTYPE html>
+<html>
+    <head>
+        <!-- scripts -->
+        <script src="https://d3js.org/d3.v6.min.js"></script>
+        <script
+            src="https://code.jquery.com/jquery-3.6.0.min.js"
+            integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+            crossorigin="anonymous"></script>
+        <script src="topoflow.js"></script>
+    </head>
+    <body>
+        <svg id="canvas">
+            <defs></defs>
+        </svg>
+        <script>
+            $(document).ready(function(){
+                /**
+                    Execute topoflow code
+                */
+                let tf = new topoflow();
+                tf.run('/path/to/data.json');
+            });
+        </script>
+    </body>
+</html>
+```
 
-Will give the following topology:
+# Sample of minimal drawing
 ![Minimal network topology](/example-images/example-minimal.png)
 
 

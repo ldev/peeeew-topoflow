@@ -303,17 +303,9 @@ class topoflow{
         console.log('Drawing node ' + args.name);
 
         /*
-        if('type' in args){
-            if(args.type == 'router'){
-                console.log('ROUTER');
-            }
-        }
-        */
-
-
-        /*
             Add node
 
+                Jquery stuff for hilighting link - not currently in use
                 .on("click", function(){
                     console.log(d3.select(this));
                 })
@@ -396,25 +388,25 @@ class topoflow{
 
 
             override the default settings - e.g. "{options: {text: {node_position: xxx}}}" is set in the JSON object
-        
-        if('options' in this.dataset && 'text' in this.dataset.options && 'node_position' in this.dataset.options.text){
-            if(this.dataset.options.text.node_position in text_pos_defs){
-                if('anchor' in text_pos_defs[this.dataset.options.text.node_position]){
-                    text_anchor = text_pos_defs[this.dataset.options.text.node_position]['anchor'];
+        */
+        if('text' in this.options && 'node_position' in this.options.text){
+            if(this.options.text.node_position in text_pos_defs){
+                if('anchor' in text_pos_defs[this.options.text.node_position]){
+                    text_anchor = text_pos_defs[this.options.text.node_position]['anchor'];
                 }
 
-                if('position_x' in text_pos_defs[this.dataset.options.text.node_position]){
-                    node_text_location_x = text_pos_defs[this.dataset.options.text.node_position]['position_x'];
+                if('position_x' in text_pos_defs[this.options.text.node_position]){
+                    node_text_location_x = text_pos_defs[this.options.text.node_position]['position_x'];
                 }
 
-                if('position_y' in text_pos_defs[this.dataset.options.text.node_position]){
-                    node_text_location_y = text_pos_defs[this.dataset.options.text.node_position]['position_y'];
+                if('position_y' in text_pos_defs[this.options.text.node_position]){
+                    node_text_location_y = text_pos_defs[this.options.text.node_position]['position_y'];
                 }
             }else{
                 console.log('Unknown options.text.node_position, falling back');
             }
         }
-        */
+        
 
         /*
             Override the previous text position settings if it's defined at the node level in the JSON file
@@ -733,20 +725,25 @@ class topoflow{
     }
 
     /*
-        Sets the user provided default options.
-        Each option will be overriden by the
-    */
-    set_default_options(args){
-        this.overwrite_options(args);
-    }
-
-    /*
         Used for overwriting the default options.
         Calling set_default_options() from class initialization overwrites the default options
         "options" from the JSON file overwrites set_default_options()
     */
     overwrite_options(args){
-        // do stuff
+        console.log('Attempting to overwrite the current options with this', args);
+
+        for(const [key, value] of Object.entries(args)){                    
+            // Check if the value is an object
+            if(key in this.options && typeof value === 'object' && value !== null){
+                for(const [key2, value2] of Object.entries(args[key])){
+                    this.options[key][key2] = args[key][key2];
+                }
+            }else if(key in this.options){
+                this.options[key] = args[key];
+            }else{
+                console.log('Not accepting option "' + key + '"');
+            }
+        }
     }
 
 
@@ -849,23 +846,6 @@ class topoflow{
             console.log('options now', class_this.options);
 
             /*
-            $.each(data.links, function(key, link_prop){
-                //Identify multiple links
-            });
-            */
-
-            /*
-                Denne virker, men bruker gammelt dataset
-                $.each(data.links_1way, function(not_in_use, link_prop){
-                    draw_link_1way(link_prop);
-                });
-
-                $.each(data.links, function(not_in_use, link_prop){
-                    draw_link(link_prop);
-                });
-            */
-
-            /*
                 Find the links in the dataset, and draw them
                 Note:_ the "main_dataset.links" is a bit unclear, as that is a collection of nodes, and in that a collection of link between nodes
             */
@@ -906,6 +886,16 @@ class topoflow{
                 class_this.draw_node(node_prop);
             });
 
+
+            /*
+                Applying the colors defined in options
+            */
+
+            // background color of SVG
+            class_this.svg_container.style('background-color', class_this.options.colors.svg_background_color);
+
+            // Link arrow color
+            d3.select("#arrow").style('fill', class_this.options.colors.arrow_pointer);
         });
     }
 }

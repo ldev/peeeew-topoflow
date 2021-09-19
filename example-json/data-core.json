@@ -1,4 +1,12 @@
 {
+    "options": {
+        "link": {
+            "width": 3
+        },
+        "text": {
+            "node_position": "center"
+        }
+    },
     "links": [
         {
             "from": "00a-core-1",

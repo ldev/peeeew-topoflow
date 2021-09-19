@@ -8,36 +8,36 @@
     "colors": {
       "circle_fill": "#fff",
       "circle_outline": "#000",
-      "arrow_pointer": "#aaa",
+      "arrow_pointer": "#000",
       "svg_background_color": "#fff",
       "link": "#000",
-      "node_text": "#aaa"
+      "node_text": "#000"
     }
   },
   "nodes": {
     "Establised": {
       "x": 300,
-      "y": 300
+      "y": 350
     },
     "Openconf.": {
       "x": 600,
-      "y": 200
+      "y": 250
     },
     "Opensent": {
       "x": 900,
-      "y": 300
+      "y": 350
     },
     "Active": {
       "x": 900,
-      "y": 600
+      "y": 650
     },
     "Connect": {
       "x": 600,
-      "y": 700
+      "y": 750
     },
     "Idle": {
       "x": 300,
-      "y": 600
+      "y": 650
     },
     "Loop Est.": {
       "x": 100,
@@ -45,19 +45,19 @@
     },
     "Loop Idle": {
       "x": 100,
-      "y": 750
+      "y": 800
     },
     "Loop Conn.": {
       "x": 600,
-      "y": 850
+      "y": 930
     },
     "Loop Act.": {
       "x": 1100,
-      "y": 750
+      "y": 800
     },
     "Loop Ope.": {
       "x": 600,
-      "y": 50
+      "y": 70
     }
   },
   "links": [
