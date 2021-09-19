@@ -91,13 +91,15 @@ Located at example-json/minimal.json
 # Sample of minimal drawing
 ![Minimal network topology](/example-images/example-minimal.png)
 
+# Script library
+We will share some scripts here to generate JSON data files for topoflow. Feel free to modify them to your own liking. Most of them will probably be written in Python3.
+
 
 # Todo (somewhat in prioritized order)
-1. Fix the custom color implementation (check out bgp-state-machine.json) ... or just finish the set_default_options() function.
-2. Optimization - only define things once
-3. Do "options" more modular, e.g. able to specify general options for all flow charts, JSON-loaded options for specific chart. This could be initialized before run().
-4. Making the terms less network specific, as topoflow could be used to other things than network topologies
-5. Write documentation for all the possible values to use in a JSON file
+1. Optimization - only define things once
+2. Making the terms less network specific, as topoflow could be used to other things than network topologies
+3. Write documentation for all the possible values to use in a JSON file
+4. Figure out how to use the Ecceman stencils for symbols, and include some of them in Topoflow.
 
 
 # Made by who

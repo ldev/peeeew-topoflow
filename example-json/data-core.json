@@ -5,6 +5,10 @@
         },
         "text": {
             "node_position": "center"
+        },
+        "colors": {
+            "svg_background_color": "#000",
+            "circle_fill": "#000"
         }
     },
     "links": [

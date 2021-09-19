@@ -210,9 +210,15 @@ class topoflow{
 
         /*
             Create marker(s)
+            Logic ensures that <defs> exists inside the <svg> element
         */
-        d3.select("defs")
-            .append('marker')
+        let defs = d3.select("defs");
+        if(defs.size() == 0){
+            console.log('<defs> not found, creating it');
+            defs = this.svg_container.append('defs');
+        }
+
+        defs.append('marker')
                 .attr('id', 'arrow')
                 .attr('class', 'arrow')
                 .attr('viewBox', [0, 0, this.markerBoxWidth, this.markerBoxHeight])
@@ -226,24 +232,6 @@ class topoflow{
                 .append('path')
                     .attr('d', d3.line()(this.arrowPoints));
     }
-
-
-
-
-
-
-
-
-
-
-
-    /*
-        #########################
-        #                       #
-        #       FUNCTIONS       #
-        #                       #
-        #########################
-    */
 
 
     /**
@@ -381,12 +369,6 @@ class topoflow{
         }
 
         /*
-            ??????????????????????????????????
-
-
-
-
-
             override the default settings - e.g. "{options: {text: {node_position: xxx}}}" is set in the JSON object
         */
         if('text' in this.options && 'node_position' in this.options.text){
@@ -440,12 +422,14 @@ class topoflow{
             .style('fill', this.options.colors.node_text)
             .text(args.name)
 
+        /*
         if('state' in args){
             if(args.state == 'down'){
-                console.log('ROUTER DOWN');
+                console.log('node down');
                 node.attr('stroke', this.options.colors.circle_outline_down);
             }
         }
+        */
     }
 
     /*
@@ -602,13 +586,11 @@ class topoflow{
 
     /*
         * Used for drawing a 1 way link
-        * @param 
+        * @param args
     */
     draw_link_1way(args){
         try{
-            console.log('Drawing regular (2way) link from ' + args.from + ' to ' + args.to + 'with the following args:');
-            console.log(args);
-            //console.log('offset: ' + args.offset);
+            console.log('Drawing regular (2way) link from ' + args.from + ' to ' + args.to + 'with the following args', args);
 
             //Global settings
             let text_pos = 0.5;
@@ -662,10 +644,8 @@ class topoflow{
                 Assign state
             */
             let link_state = 'up';
-            if('state' in args){
-                if(args.state == 'down'){
-                    link_state = 'down';
-                }
+            if('state' in args and args.state == 'down'){
+                link_state = 'down';
             }
 
             let link_a_b = this.svg
@@ -701,8 +681,7 @@ class topoflow{
                 });
             }
         }catch(err){
-            console.error('Error in draw_link():');
-            console.error(err);
+            console.error('Error in draw_link():', err);
         }
     }
 
@@ -885,6 +864,7 @@ class topoflow{
                 node_prop.name = node_name;
                 class_this.draw_node(node_prop);
             });
+
 
 
             /*
