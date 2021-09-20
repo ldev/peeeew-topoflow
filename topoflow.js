@@ -590,7 +590,7 @@ class topoflow{
     */
     draw_link_1way(args){
         try{
-            console.log('Drawing regular (2way) link from ' + args.from + ' to ' + args.to + 'with the following args', args);
+            console.log('Drawing 1way link from ' + args.from + ' to ' + args.to + 'with the following args', args);
 
             //Global settings
             let text_pos = 0.5;
@@ -644,7 +644,7 @@ class topoflow{
                 Assign state
             */
             let link_state = 'up';
-            if('state' in args and args.state == 'down'){
+            if('state' in args && args['state'] == 'down'){
                 link_state = 'down';
             }
 
@@ -676,7 +676,7 @@ class topoflow{
                 this.draw_text_on_link({
                     x: from_node_pos_x+((to_node_pos_x-from_node_pos_x)*text_pos),
                     y: from_node_pos_y+((to_node_pos_y-from_node_pos_y)*text_pos),
-                    text: "lol",
+                    text: rate,
                     degrees: text_degrees
                 });
             }
@@ -850,6 +850,9 @@ class topoflow{
 
                     // The draw_* functions does not need to know of the type (1way, 2way), as it's dedicated functions beaing called for each type.
                     delete new_properties_formated.type;
+
+                    // console.log('new_properties_formated', new_properties_formated)
+
                     if(link.type == '2way'){
                         class_this.draw_link(new_properties_formated);
                     }else{
