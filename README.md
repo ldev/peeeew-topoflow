@@ -62,30 +62,31 @@ Located at example-json/minimal.json
 
 
 # Minimal HTML example
+
 ```html
 <!DOCTYPE html>
 <html>
-    <head>
-        <!-- scripts -->
-        <script src="https://d3js.org/d3.v6.min.js"></script>
-        <script
-            src="https://code.jquery.com/jquery-3.6.0.min.js"
-            integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
-            crossorigin="anonymous"></script>
-        <script src="topoflow.js"></script>
-    </head>
-    <body>
-        <svg id="canvas"></svg>
-        <script>
-            $(document).ready(function(){
-                /**
-                    Execute topoflow code
-                */
-                let tf = new topoflow();
-                tf.run('/path/to/data.json');
-            });
-        </script>
-    </body>
+<head>
+  <!-- scripts -->
+  <script src="https://d3js.org/d3.v6.min.js"></script>
+  <script
+          src="https://code.jquery.com/jquery-3.6.0.min.js"
+          integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+          crossorigin="anonymous"></script>
+  <script src="topoflow.js"></script>
+</head>
+<body>
+<svg id="canvas"></svg>
+<script>
+  $(document).ready(function () {
+    /**
+     Execute topoflow code
+     */
+    const tf = new Topoflow();
+    tf.run('/path/to/data.json');
+  });
+</script>
+</body>
 </html>
 ```
 
