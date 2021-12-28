@@ -104,6 +104,47 @@ We will share some scripts here to generate JSON data files for topoflow. Feel f
 3. Write documentation for all the possible values to use in a JSON file
 4. Figure out how to use the Ecceman stencils for symbols, and include some of them in Topoflow.
 5. Window scaling - e.g. making the SVG full screen regardless of aspect ratio
+6. Max in, max out. Define colors, define thresholds
+
+# Format/options
+## links
+* `type`
+  * Defines if a link is unidirectional or bidirectional
+  * 1way
+  * 2way (default)
+* `state`
+  * Defines if the link is up or down
+  * up (default)
+  * down
+* `to` (required)
+  * Name of the "from" node
+* `to` (required)
+  * Name of the "to" node
+* `rate` (only applicable to type: 1way)
+  * Defines the current rate of the link. Shown as overlay on the drawn link. Free text.
+* `rate_in` (only applicable to type: 2way)
+  * Defines the current inbound rate of the link. Shown as overlay on the drawn link. Free text.
+* `rate_out` (only applicable to type: 2way)
+  * Defines the current outbound rate of the link. Shown as overlay on the drawn link. Free text.
+* `load` (only applicable to type: 1way)
+  * Defines the current load on the unidirectional link.
+    * Only accepts int from 0 to 100.
+    * Colors are customizable through `options -> colors -> load_colors` []
+* `load_in` (only applicable to type: 2way)
+  * Defines the current inbound load on the bidirectional link.
+    * Only accepts int from 0 to 100.
+    * Colors are customizable through `options -> colors -> load_colors` []
+* `load_out` (only applicable to type: 2way)
+  * Defines the current outbound load on the bidirectional link.
+    * Only accepts int from 0 to 100.
+    * Colors are customizable through `options -> colors -> load_colors` []
+
+## nodes
+To be written...
+
+## options
+To be written...
+
 
 # Made by who
 Two network engineers, not satisfied with what we could find in the open source world.

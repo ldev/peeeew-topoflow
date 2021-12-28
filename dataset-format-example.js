@@ -11,8 +11,8 @@ class topoflow{
                     "links": [
                         {
                             "type": "1way",
-                            "max_out": "20",
-                            "max_in": "20",
+                            "load_out": "20",
+                            "load_in": "20",
                             "rate_out": "331 M",
                             "rate_in": "337 M",
                             "state": "up"
@@ -21,7 +21,7 @@ class topoflow{
                             "type": "1way",
                             "max_out": "20",
                             "max_in": "20",
-                            "rate_out": "331 M",
+                            "rate_out": "331",
                             "rate_in": "337 M",
                             "state": "up"
                         }
@@ -33,16 +33,16 @@ class topoflow{
                     "links": [
                         {
                             "type": "2way",
-                            "max_out": "20",
-                            "max_in": "20",
+                            "load_out": "20",
+                            "load_in": "20",
                             "rate_out": "331 M",
                             "rate_in": "337 M",
                             "state": "up"
                         },
                         {
                             "type": "2way",
-                            "max_out": "20",
-                            "max_in": "20",
+                            "load_out": "20",
+                            "load_in": "20",
                             "rate_out": "331 M",
                             "rate_in": "337 M",
                             "state": "up"
@@ -55,8 +55,8 @@ class topoflow{
                     "links": [
                         {
                             "type": "1way",
-                            "max_out": "20",
-                            "max_in": "20",
+                            "load_out": "20",
+                            "load_in": "20",
                             "rate_out": "331 M",
                             "rate_in": "337 M",
                             "state": "up"
