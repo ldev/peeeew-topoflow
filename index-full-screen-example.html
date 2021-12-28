@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Topoflow example code</title>
+        <link href="/projects/peeeew-topoflow/favicon.ico" rel="icon" type="image/x-icon" />
+        <meta charset="UTF-8">
+
+        <!-- scripts -->
+        <script src="https://d3js.org/d3.v6.min.js"></script>
+        <script
+            src="https://code.jquery.com/jquery-3.6.0.min.js"
+            integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+            crossorigin="anonymous"></script>
+
+        <script src="topoflow.js"></script>
+
+
+        <style type="text/css">
+            *{
+                margin: 0;
+                padding: 0;
+            }
+            html, body{
+                width: 100%;
+                height: 100%;
+                font-size: 10px;
+            }
+
+            svg .link-text{
+                font-size: 1.5rem;
+            }
+
+            svg .node-text{
+                font-size: 1.5rem;
+                font-weight: bold;
+            }
+
+            svg .link-down{
+                stroke-dasharray: 10;
+            }
+        </style>
+
+
+
+    </head>
+    <body>
+        <svg id="canvas"></svg>
+
+        
+        
+        <script>
+            $(document).ready(function(){
+                /**
+                    Execute topoflow code
+                */
+                let tf = new topoflow();
+                tf.overwrite_options({
+                    'svg_height': '100%',
+                    'svg_width': '100%'
+                });
+                tf.run('example-scripts/ruter.php');
+            });
+        </script>
+
+    </body>
+</html>

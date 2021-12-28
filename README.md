@@ -101,15 +101,9 @@ We will share some scripts here to generate JSON data files for topoflow. Feel f
 # Todo (somewhat in prioritized order)
 1. Optimization - only define things once
 2. Making the terms less network specific, as topoflow could be used to other things than network topologies
-3. Write documentation for all the possible values to use in a JSON file
-4. Figure out how to use the Ecceman stencils for symbols, and include some of them in Topoflow.
-5. Window scaling - e.g. making the SVG full screen regardless of aspect ratio. See these unimplemented options:  
-```
-'display_fullscreen': false,
-'svg_width': 1500,
-'svg_height': 1000
-```
-6. implement load|load_in|load_out. Define colors, define thresholds
+  * Perhaps rename "rate" to "text" on the links? Since it can be with any text.
+3. Figure out how to use the Ecceman stencils for symbols, and include some of them in Topoflow.
+4. Remove the jQuery requirement 
 
 # Format/options
 Here are all the available things to set and toggle in json file topoflow loads.
@@ -256,24 +250,38 @@ Possible options to toggle
     * Default: 1.4
 * `node_radius`
   * node radius in points - e.g. the size of the node
+  * Default: 40
 * `colors`  
 As we're lazy, here is the code directly from topoflow.js  
 ```
-                'circle_fill': '#000',
-                'circle_outline': '#fff',
-                'circle_outline_down': '#f00',
-                'arrow_pointer': '#fff',
-                'svg_background_color': '#000',
-                'link': '#fff',
-                'link_down': '#f00',
-                'link_text': '#f0a',
-                'node_text': '#fff'
+'colors': {
+    'circle_fill': '#000',
+    'circle_outline': '#fff',
+    'circle_outline_down': '#f00',
+    'arrow_pointer': '#fff',
+    'svg_background_color': '#000',
+    'link': '#fff',
+    'link_down': '#f00',
+    'link_text': '#f0a',
+    'node_text': '#fff',
+    'load': [
+        '#f00', // >0%
+        '#ff0', // >33%
+        '#0f0' // > 66%
+    ]
+}
 ```
 * `link`
   * `width` Width of link
     * Default: 20 points
   * `spacing` Spacing between muliple links between the same two nodes. Ignored if there is only one link between the two nodes.
     * Default: 20 points
+* `svg_height` Height of the <svg> element
+  * Can be set either as points (1000) or as percent ("100%") 
+  * Default: 1000 (points/pixels)
+* `svg_width` Width of the <svg> element
+  * Can be set either as points (1000) or as percent ("100%") 
+  * Default: 1000 (points/pixels)
 
 # Made by who
 Two network engineers, not satisfied with what we could find in the open source world.

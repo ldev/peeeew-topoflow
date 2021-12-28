@@ -3,7 +3,9 @@
         "link": {
             "offset": 20,
             "width": 10
-        }
+        },
+        "svg_width": "100%",
+        "svg_height": "100%"
     },
     "links": [
         {

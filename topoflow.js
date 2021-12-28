@@ -30,7 +30,12 @@ class topoflow{
                 'link': '#fff',
                 'link_down': '#f00',
                 'link_text': '#f0a',
-                'node_text': '#fff'
+                'node_text': '#fff',
+                'load': [
+                    '#f00', // >0%
+                    '#ff0', // >33%
+                    '#0f0' // > 66%
+                ]
             },
 
             /*
@@ -70,7 +75,7 @@ class topoflow{
             'node_radius': 40,
 
             /*
-                Misc. link properties goes here
+                Link properties goes here
             */
             'link': {
                 /*
@@ -86,11 +91,15 @@ class topoflow{
             },
 
             /*
+                Sets the height and width of the <svg> element. Can be specified either as percent ("100%") or pixels ("1000")
+            */
+            'svg_width': 1500,
+            'svg_height': 1000,
+
+            /*
                 Not implemented yet
             */
-            'display_fullscreen': false,
-            'svg_width': 1500,
-            'svg_height': 1000
+            'display_fullscreen': false
         };
 
 
@@ -138,7 +147,7 @@ class topoflow{
             'y2' // end y coordinate
         ]
 
-
+        let load_color_steps = {};
 
         /*
             Create marker(s)
@@ -201,6 +210,67 @@ class topoflow{
         }
         return data;
     }
+
+
+    /**
+        Used for creating the "steps" in load coloring.
+        options.colors.load is now an array with n colors like this:
+        We need to make it an object with steps, like this:
+        [
+            {
+                "step": 75,
+                "color": "#aaf"
+            },
+            {
+                "step": 50,
+                "color": "#00f"
+            },
+            {
+                "step": 25,
+                "color": "#fa0"
+            },
+            {
+                "step": 0,
+                "color": "#f0a"
+            }
+        ]
+
+        @returns array of objects with color steps
+    */
+    calculate_load_color_streps(){
+        // let load = parseInt(load);
+        let new_load_array = [];
+        let number_of_colors = this.options.colors.load.length;
+        for (let i = 0; i < number_of_colors; i++){
+            new_load_array.push({
+                step: Math.floor((100/number_of_colors)*i),
+                color: this.options.colors.load[i]
+            });
+        }
+        return new_load_array.reverse(); // flip the array, as it's used for "matching upwards"
+
+    }
+
+    /**
+        Then we can do "for each of the colors starting from high to low, if load is higher than color use color, else iterate further"
+        Uses the array created with calculate_load_color_streps()
+
+        @param {float|int} load (percent)
+        @returns {string} hex link color (e.g. "#f0a")
+    */
+    link_load_color(load){
+        if(load === undefined){
+            return this.options.colors.link;
+        }
+        let color_steps = this.load_color_steps;
+        for(var i = 0; i < color_steps.length; i++){
+            if(load > color_steps[i].step){
+                return color_steps[i].color;
+            }
+        }
+        return this.options.colors.link;
+    }
+
 
 
     /**
@@ -369,9 +439,9 @@ class topoflow{
         * from
         * to
     */
-    draw_link(args){
+    draw_link_2way(args){
         try{
-            console.log('Drawing regular (2way) link from ' + args.from + ' to ' + args.to);
+            console.log('Drawing regular (2way) link from ' + args.from + ' to ' + args.to, args);
             // console.log(args);
 
             // global settings
@@ -386,6 +456,12 @@ class topoflow{
             let degrees = angle_a_to_b*(180/Math.PI)
             let sin_to_angle = Math.sin(angle_a_to_b);
             let cos_to_angle = Math.cos(angle_a_to_b);
+
+            /*
+                Link coloring based on load
+            */
+            let link_color_in = this.link_load_color(args.load_in);
+            let link_color_out = this.link_load_color(args.load_out);
 
             /*
                 Adjust for spacing
@@ -467,7 +543,7 @@ class topoflow{
                     .attr('y1', from_node_pos_y)
                     .attr('x2', (halfway_pos_x - cos_to_angle * arrow_offset) )
                     .attr('y2', (halfway_pos_y - sin_to_angle * arrow_offset) )
-                    .attr('stroke', this.options.colors.link)
+                    .attr('stroke', link_color_out)
                     .attr('stroke-width', this.options.link.width)
                     .attr('marker-end', 'url(#arrow)');
 
@@ -478,7 +554,7 @@ class topoflow{
                     .attr('y1', to_node_pos_y)
                     .attr('x2', (halfway_pos_x- Math.cos(angle_a_to_b + Math.PI) * arrow_offset) )
                     .attr('y2', (halfway_pos_y- Math.sin(angle_a_to_b + Math.PI) * arrow_offset) )
-                    .attr('stroke', this.options.colors.link)
+                    .attr('stroke', link_color_in)
                     .attr('stroke-width', this.options.link.width)
                     .attr('marker-end', 'url(#arrow)')
                     ;
@@ -511,7 +587,7 @@ class topoflow{
                 });
             }
         }catch(err){
-            console.error('Error in draw_link():');
+            console.error('Error in draw_link_2way():');
             console.error(err);
         }
     }
@@ -522,7 +598,7 @@ class topoflow{
     */
     draw_link_1way(args){
         try{
-            console.log('Drawing 1way link from ' + args.from + ' to ' + args.to + 'with the following args', args);
+            console.log('Drawing 1way link from ' + args.from + ' to ' + args.to + ' with the following args', args);
 
             //Global settings
             let text_pos = 0.5;
@@ -537,9 +613,13 @@ class topoflow{
             let cos_to_angle = Math.cos(angle_a_to_b);
 
             /*
+                Link coloring based on load
+            */
+            let link_color = this.link_load_color(args.load);
+
+            /*
                 Adjust for offset
             */
-
             let spacing_x = sin_to_angle * args.spacing;
             let spacing_y = cos_to_angle * args.spacing;
 
@@ -587,7 +667,7 @@ class topoflow{
                     .attr('y1', from_node_pos_y)
                     .attr('x2', to_node_pos_x)
                     .attr('y2', to_node_pos_y)
-                    .attr('stroke', this.options.colors.link)
+                    .attr('stroke', link_color)
                     .attr('stroke-width', this.options.link.width)
                     .attr('marker-end', 'url(#arrow)')
                     .on("click", function(){
@@ -613,7 +693,7 @@ class topoflow{
                 });
             }
         }catch(err){
-            console.error('Error in draw_link():', err);
+            console.error('Error in draw_link_1way():', err);
         }
     }
 
@@ -678,6 +758,9 @@ class topoflow{
                 @todo: More about the topic: https://stackoverflow.com/questions/13964155/get-javascript-object-from-array-of-objects-by-value-of-property
             */
             try{
+                // Create load color steps
+
+
                 // loop over each link object in the JSON dataset
                 $.each(data.links, function(not_in_use, y1){
                     let state_machine_multiple_link_detected = false;
@@ -690,43 +773,83 @@ class topoflow{
                             state_machine_multiple_link_detected = true;
                             console.log("Multiple link detected (" + y1.to + ", " + y1.from + "), x2_index (" + x2_index + ")");
 
-                            // checkin if a -> b
-                            if(y2.to === y1.to && y2.from === y1.from){
-                                // console.log('replacing index (a->b) ' + x2_index);
-                                class_this.main_dataset['links'][x2_index]['links'].push({
-                                    'type': link_type,
-                                    'state': 'up',
-                                    'rate_in': y1.rate_in,
-                                    'rate_out': y1.rate_out,
-                                    'rate': y1.rate
-                                })
-                            }
+                            if(link_type == '2way'){
+                                /*
+                                    2 way link
+                                */
+                                // checkin if a -> b
+                                if(y2.to === y1.to && y2.from === y1.from){
+                                    // console.log('replacing index (a->b) ' + x2_index);
+                                    class_this.main_dataset['links'][x2_index]['links'].push({
+                                        'type': link_type,
+                                        'state': 'up',
+                                        'rate_in': y1.rate_in,
+                                        'rate_out': y1.rate_out,
+                                        'load_in': y1.load_in,
+                                        'load_out': y1.load_out
+                                    })
+                                }
 
-                            // checkin if b -> a
-                            if(y2.to === y1.from && y2.from === y1.to){
-                                // console.log('replacing index (b->a) ' + x2_index);
-                                class_this.main_dataset['links'][x2_index]['links'].push({
-                                    'type': link_type,
-                                    'state': 'up',
-                                    'rate_out': y1.rate_in, // reversed
-                                    'rate_in': y1.rate_out, // reversed
-                                    'rate': y1.rate
-                                })
+                                // checkin if b -> a
+                                if(y2.to === y1.from && y2.from === y1.to){
+                                    // console.log('replacing index (b->a) ' + x2_index);
+                                    class_this.main_dataset['links'][x2_index]['links'].push({
+                                        'type': link_type,
+                                        'state': 'up',
+                                        'rate_out': y1.rate_in, // reversed
+                                        'rate_in': y1.rate_out, // reversed
+                                        'load_in': y1.load_out, // reversed
+                                        'load_out': y1.load_in // reversed
+                                    })
+                                }
+                            }else{
+                                /*
+                                    1 way link
+                                */
+                                if(y2.to === y1.to && y2.from === y1.from){
+                                    // console.log('replacing index (a->b) ' + x2_index);
+                                    class_this.main_dataset['links'][x2_index]['links'].push({
+                                        'type': link_type,
+                                        'state': 'up',
+                                        'rate': y1.rate,
+                                        'load': y1.load,
+                                    })
+                                }
                             }
                         }
                     });
                     if(state_machine_multiple_link_detected === false){
-                        class_this.main_dataset['links'].push({
-                            'to': y1.to,
-                            'from': y1.from,
-                            'links': [{
-                                'type': link_type,
-                                'state': 'up',
-                                'rate_in': y1.rate_in,
-                                'rate_out': y1.rate_out,
-                                'rate': y1.rate
-                            }]
-                        });
+                        if(link_type == '2way'){
+                            /*
+                                2 way link
+                            */
+                            class_this.main_dataset['links'].push({
+                                'to': y1.to,
+                                'from': y1.from,
+                                'links': [{
+                                    'type': link_type,
+                                    'state': 'up',
+                                    'rate_in': y1.rate_in,
+                                    'rate_out': y1.rate_out,
+                                    'load_in': y1.load_in,
+                                    'load_out': y1.load_out
+                                }]
+                            });
+                        }else{
+                            /*
+                                1 way link
+                            */
+                            class_this.main_dataset['links'].push({
+                                'to': y1.to,
+                                'from': y1.from,
+                                'links': [{
+                                    'type': link_type,
+                                    'state': 'up',
+                                    'rate': y1.rate,
+                                    'load': y1.load,
+                                }]
+                            });
+                        }
                     }
                 });
                 // Copy over the nodes from JSON data to $main_dataset
@@ -770,6 +893,11 @@ class topoflow{
                 Note:_ the "main_dataset.links" is a bit unclear, as that is a collection of nodes, and in that a collection of link between nodes
             */
             try{
+                // Generate load color steps
+                class_this.load_color_steps = class_this.calculate_load_color_streps();
+                console.log('load_color_steps', class_this.load_color_steps);
+
+
                 $.each(class_this.main_dataset.links, function(not_in_use, link_props){
                     let link_to = link_props.to;
                     let link_from = link_props.from;
@@ -794,7 +922,7 @@ class topoflow{
                         // console.log('new_properties_formated', new_properties_formated)
 
                         if(link.type == '2way'){
-                            class_this.draw_link(new_properties_formated);
+                            class_this.draw_link_2way(new_properties_formated);
                         }else{
                             class_this.draw_link_1way(new_properties_formated);
                         }
@@ -823,6 +951,10 @@ class topoflow{
 
             // background color of SVG
             class_this.svg_container.style('background-color', class_this.options.colors.svg_background_color);
+
+            // set size of the <svg> object
+            class_this.svg_container.attr('height', class_this.options.svg_height);
+            class_this.svg_container.attr('width', class_this.options.svg_width);
 
             // Link arrow color
             d3.select("#arrow").style('fill', class_this.options.colors.arrow_pointer);
