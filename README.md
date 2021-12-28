@@ -107,7 +107,25 @@ We will share some scripts here to generate JSON data files for topoflow. Feel f
 6. Max in, max out. Define colors, define thresholds
 
 # Format/options
+
+
 ## links
+### Example
+```
+"links": [
+    {
+        "from": "00a-core-1",
+        "to": "00b-core-1",
+        "rate_out": "1",
+        "rate_in": "10"
+    },
+    {
+        ...
+    }
+]
+```
+
+### Definitions
 * `type`
   * Defines if a link is unidirectional or bidirectional
   * 1way
@@ -116,7 +134,7 @@ We will share some scripts here to generate JSON data files for topoflow. Feel f
   * Defines if the link is up or down
   * up (default)
   * down
-* `to` (required)
+* `from` (required)
   * Name of the "from" node
 * `to` (required)
   * Name of the "to" node
@@ -140,7 +158,38 @@ We will share some scripts here to generate JSON data files for topoflow. Feel f
     * Colors are customizable through `options -> colors -> load_colors` []
 
 ## nodes
-To be written...
+### Example
+```
+"nodes": {
+    "node1": {
+        "x": 100,
+        "y": 100,
+        "text_position" : "top"
+    },
+    "node2": {
+        "x": 500,
+        "y": 400
+    }
+}
+```
+
+### Definitions
+* `x` (required)
+  * The x axis position, in points
+* `y` (required)
+  * The y axis position, in points
+* `text_position`
+  * Where should the text of the node name be placed in relation to the node?
+  * center
+  * top
+  * top-left
+  * top-right
+  * bottom (default)
+  * bottom-left
+  * bottom-right
+  * right
+  * left
+
 
 ## options
 To be written...
