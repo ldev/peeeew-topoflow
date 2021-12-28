@@ -103,8 +103,7 @@ We will share some scripts here to generate JSON data files for topoflow. Feel f
 2. Making the terms less network specific, as topoflow could be used to other things than network topologies
 3. Write documentation for all the possible values to use in a JSON file
 4. Figure out how to use the Ecceman stencils for symbols, and include some of them in Topoflow.
-5. More fault handling in Topoflow (e.g. when fetching JSON file, more try/catch)
-6. Fix "rate" not being shown on 1 way links
+5. Window scaling - e.g. making the SVG full screen regardless of aspect ratio
 
 # Made by who
 Two network engineers, not satisfied with what we could find in the open source world.

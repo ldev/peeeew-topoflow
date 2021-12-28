@@ -110,73 +110,6 @@ class topoflow{
             'nodes': []
         };
 
-        /*
-            This is just the example syntax, and this variable will not be used anywhere
-        */
-        this.main_dataset_suggested_format = {
-            "links": [
-                {
-                    "from": "00a-core-1",
-                    "to": "00a-core-2",
-                    "links": [
-                        {
-                            "type": "1way",
-                            "max_out": "20",
-                            "max_in": "20",
-                            "rate_out": "331 M",
-                            "rate_in": "337 M",
-                            "state": "up"
-                        },
-                        {
-                            "type": "1way",
-                            "max_out": "20",
-                            "max_in": "20",
-                            "rate_out": "331 M",
-                            "rate_in": "337 M",
-                            "state": "up"
-                        }
-                    ]
-                },
-                {
-                    "from": "00a-core-1",
-                    "to": "00b-core-1",
-                    "links": [
-                        {
-                            "type": "2way",
-                            "max_out": "20",
-                            "max_in": "20",
-                            "rate_out": "331 M",
-                            "rate_in": "337 M",
-                            "state": "up"
-                        },
-                        {
-                            "type": "2way",
-                            "max_out": "20",
-                            "max_in": "20",
-                            "rate_out": "331 M",
-                            "rate_in": "337 M",
-                            "state": "up"
-                        }
-                    ]
-                },
-                {
-                    "from": "00a-core-1",
-                    "to": "00a-core-2",
-                    "links": [
-                        {
-                            "type": "1way",
-                            "max_out": "20",
-                            "max_in": "20",
-                            "rate_out": "331 M",
-                            "rate_in": "337 M",
-                            "state": "up"
-                        }
-                    ]
-                },
-            ]
-        };
-
-
 
         /*
             To hold all the magic. All the links and nodes
@@ -730,14 +663,15 @@ class topoflow{
         Populate the dataset
     */
     run(json_file){
-        console.log('run() called, json file: ' + json_file);
+        console.log('run() called (json file: ' + json_file + ')');
         // prevent caching
         let class_this = this; // because getJSON overwrites "this"
-        $.getJSON(json_file, {_: new Date().getTime()}, function(data){
-            // svg.selectAll(".svg_container").remove();
+        $.getJSON(json_file, {_: new Date().getTime()})
+        .done(function(data){
 
-            let dataset = data;
             console.log('data loaded from json file', data);
+            let dataset = data;
+            
 
             /**
                 * Populates a new "main dataset", which will make us be able to detect multiple links
@@ -764,7 +698,8 @@ class topoflow{
                                     'type': link_type,
                                     'state': 'up',
                                     'rate_in': y1.rate_in,
-                                    'rate_out': y1.rate_out
+                                    'rate_out': y1.rate_out,
+                                    'rate': y1.rate
                                 })
                             }
 
@@ -774,8 +709,9 @@ class topoflow{
                                 class_this.main_dataset['links'][x2_index]['links'].push({
                                     'type': link_type,
                                     'state': 'up',
-                                    'rate_out': y1.rate_in, // reversed!
-                                    'rate_in': y1.rate_out // reversed!
+                                    'rate_out': y1.rate_in, // reversed
+                                    'rate_in': y1.rate_out, // reversed
+                                    'rate': y1.rate
                                 })
                             }
                         }
@@ -788,7 +724,8 @@ class topoflow{
                                 'type': link_type,
                                 'state': 'up',
                                 'rate_in': y1.rate_in,
-                                'rate_out': y1.rate_out
+                                'rate_out': y1.rate_out,
+                                'rate': y1.rate
                             }]
                         });
                     }
@@ -804,23 +741,28 @@ class topoflow{
             }
 
 
+
             /**
                 * Conditionally overrides the default options from the options in the loaded JSON object "data"
                 * Will only override if the option is already defined in the "options" object
                 @todo Fix ugly hax, actually iterate recursively through object
             */
-            if('options' in data){
-                for(const [key, value] of Object.entries(data.options)){                    
-                    // Check if the value is an object
-                    if(key in class_this.options && typeof value === 'object' && value !== null){
-                        for(const [key2, value2] of Object.entries(data.options[key])){
-                            class_this.options[key][key2] = data.options[key][key2];
+            try{
+                if('options' in data){
+                    for(const [key, value] of Object.entries(data.options)){                    
+                        // Check if the value is an object
+                        if(key in class_this.options && typeof value === 'object' && value !== null){
+                            for(const [key2, value2] of Object.entries(data.options[key])){
+                                class_this.options[key][key2] = data.options[key][key2];
+                            }
+                        }else if(key in class_this.options){
+                            class_this.options[key] = data.options[key];
                         }
-                    }else if(key in class_this.options){
-                        class_this.options[key] = data.options[key];
+                        
                     }
-                    
                 }
+            }catch(error){
+                console.error('Error while parsing "options" from JSON: ' + error);
             }
             console.log('options now', class_this.options);
 
@@ -828,45 +770,53 @@ class topoflow{
                 Find the links in the dataset, and draw them
                 Note:_ the "main_dataset.links" is a bit unclear, as that is a collection of nodes, and in that a collection of link between nodes
             */
-            $.each(class_this.main_dataset.links, function(not_in_use, link_props){
-                let link_to = link_props.to;
-                let link_from = link_props.from;
-                let number_of_links = link_props.links.length;
+            try{
+                $.each(class_this.main_dataset.links, function(not_in_use, link_props){
+                    let link_to = link_props.to;
+                    let link_from = link_props.from;
+                    let number_of_links = link_props.links.length;
 
-                console.log('Processing a total of ' + number_of_links+ ' links from ' + link_to + ' to ' + link_from);
-                let link_offset_array = class_this.calculate_offsets(number_of_links);
-                $.each(link_props.links, function(link_index, link){
-                    /*
-                        Draw each separate link
-                    */
-                    let offset = link_offset_array[link_index];
+                    console.log('Processing a total of ' + number_of_links+ ' links from ' + link_to + ' to ' + link_from);
+                    let link_offset_array = class_this.calculate_offsets(number_of_links);
+                    $.each(link_props.links, function(link_index, link){
+                        /*
+                            Draw each separate link
+                        */
+                        let offset = link_offset_array[link_index];
 
-                    // console.log('Drawing link (' + link.type + ') between ' + link_to + ' and ' + link_from + ', width an offset of ' + offset);
+                        // console.log('Drawing link (' + link.type + ') between ' + link_to + ' and ' + link_from + ', width an offset of ' + offset);
 
-                    /*
-                        Merge data into a new object to feed the draw_link*() functions
-                    */
-                    let new_properties_formated = Object.assign({}, link, {'to': link_to, 'from': link_from, 'offset': offset});
+                        /*
+                            Merge data into a new object to feed the draw_link*() functions
+                        */
+                        let new_properties_formated = Object.assign({}, link, {'to': link_to, 'from': link_from, 'offset': offset});
 
-                    // The draw_* functions does not need to know of the type (1way, 2way), as it's dedicated functions beaing called for each type.
-                    delete new_properties_formated.type;
+                        // The draw_* functions does not need to know of the type (1way, 2way), as it's dedicated functions beaing called for each type.
+                        delete new_properties_formated.type;
 
-                    // console.log('new_properties_formated', new_properties_formated)
+                        // console.log('new_properties_formated', new_properties_formated)
 
-                    if(link.type == '2way'){
-                        class_this.draw_link(new_properties_formated);
-                    }else{
-                        class_this.draw_link_1way(new_properties_formated);
-                    }
-                  
+                        if(link.type == '2way'){
+                            class_this.draw_link(new_properties_formated);
+                        }else{
+                            class_this.draw_link_1way(new_properties_formated);
+                        }
+                      
+                    });
                 });
-            });
+            }catch(error){
+                console.error('Error while drawing links: ' + error);
+            }
 
-            // Using the new dataset
-            $.each(class_this.main_dataset.nodes, function(node_name, node_prop){
-                node_prop.name = node_name;
-                class_this.draw_node(node_prop);
-            });
+
+            try{
+                $.each(class_this.main_dataset.nodes, function(node_name, node_prop){
+                    node_prop.name = node_name;
+                    class_this.draw_node(node_prop);
+                });
+            }catch(error){
+                console.error('Error while drawing nodes: ' + error);
+            }
 
 
 
@@ -879,6 +829,11 @@ class topoflow{
 
             // Link arrow color
             d3.select("#arrow").style('fill', class_this.options.colors.arrow_pointer);
-        });
+        })
+        .fail(
+            function(jqXHR, textStatus, errorThrown){
+                console.error('Unable to load JSON file "' + json_file + '", status: ' + errorThrown)
+            }
+        );
     }
 }
