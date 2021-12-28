@@ -103,26 +103,33 @@ We will share some scripts here to generate JSON data files for topoflow. Feel f
 2. Making the terms less network specific, as topoflow could be used to other things than network topologies
 3. Write documentation for all the possible values to use in a JSON file
 4. Figure out how to use the Ecceman stencils for symbols, and include some of them in Topoflow.
-5. Window scaling - e.g. making the SVG full screen regardless of aspect ratio
-6. Max in, max out. Define colors, define thresholds
+5. Window scaling - e.g. making the SVG full screen regardless of aspect ratio. See these unimplemented options:  
+```
+'display_fullscreen': false,
+'svg_width': 1500,
+'svg_height': 1000
+```
+6. implement load|load_in|load_out. Define colors, define thresholds
 
 # Format/options
-
+Here are all the available things to set and toggle in json file topoflow loads.
 
 ## links
 ### Example
 ```
-"links": [
+{
+  "links": [
     {
-        "from": "00a-core-1",
-        "to": "00b-core-1",
-        "rate_out": "1",
-        "rate_in": "10"
+      "from": "00a-core-1",
+      "to": "00b-core-1",
+      "rate_out": "1",
+      "rate_in": "10"
     },
     {
-        ...
+      ...
     }
-]
+  ]
+}
 ```
 
 ### Definitions
@@ -157,19 +164,23 @@ We will share some scripts here to generate JSON data files for topoflow. Feel f
     * Only accepts int from 0 to 100.
     * Colors are customizable through `options -> colors -> load_colors` []
 
+
+
 ## nodes
 ### Example
 ```
-"nodes": {
+{
+  "nodes": {
     "node1": {
-        "x": 100,
-        "y": 100,
-        "text_position" : "top"
+      "x": 100,
+      "y": 100,
+      "text_position" : "top"
     },
     "node2": {
-        "x": 500,
-        "y": 400
+      "x": 500,
+      "y": 400
     }
+  }
 }
 ```
 
@@ -191,9 +202,78 @@ We will share some scripts here to generate JSON data files for topoflow. Feel f
   * left
 
 
-## options
-To be written...
 
+## options
+Options can, in addition to through the JSON file, be provided through the following javascript calls:
+```
+let tf = new topoflow();
+tf.overwrite_options({
+    'colors': {
+        'svg_background_color': '#333',
+        'circle_fill': '#333'
+    },
+    'node_radius': 60
+});
+tf.run(json_source);
+```
+
+### Example
+In the JSON file
+```
+{
+  "options": {
+    "text": {
+      "node_position": "center",
+      "link_follow_angle": false
+    },
+    "node_radius": 60,
+    "colors": {
+      "circle_fill": "#fff",
+      "circle_outline": "#000",
+      "arrow_pointer": "#000",
+      "svg_background_color": "#fff",
+      "link": "#000",
+      "node_text": "#000"
+    }
+  }
+}
+```
+
+### Definitions
+Everything under options are optional.
+
+Possible options to toggle
+* `text`
+  * `node_position` Choose where to draw the text relative to the node
+    * See nodes -> definitions -> text_position for possible values
+    * Default: bottom
+  * `link_follow_angle` Toggle if the text should follow the angle of the link or not. Makes sense if you are using wide links, and want the text to be "inside" the link
+    * Default: true (boolean)
+  * `link_prevent_upside_down` Prevents the link text to be shown upside down
+    * Default: true (boolean)
+  * `node_offset` The offset from the node center to the text.
+    * This is multiplied by `node_radius`
+    * Default: 1.4
+* `node_radius`
+  * node radius in points - e.g. the size of the node
+* `colors`  
+As we're lazy, here is the code directly from topoflow.js  
+```
+                'circle_fill': '#000',
+                'circle_outline': '#fff',
+                'circle_outline_down': '#f00',
+                'arrow_pointer': '#fff',
+                'svg_background_color': '#000',
+                'link': '#fff',
+                'link_down': '#f00',
+                'link_text': '#f0a',
+                'node_text': '#fff'
+```
+* `link`
+  * `width` Width of link
+    * Default: 20 points
+  * `spacing` Spacing between muliple links between the same two nodes. Ignored if there is only one link between the two nodes.
+    * Default: 20 points
 
 # Made by who
 Two network engineers, not satisfied with what we could find in the open source world.

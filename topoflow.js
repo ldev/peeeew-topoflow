@@ -57,7 +57,7 @@ class topoflow{
                 'link_prevent_upside_down': true,
 
                 /*
-                    Default offset of text to node. This is multiplied by "node_radius", to give the number of point the node text is 
+                    Default offset of text to node. This is multiplied by "node_radius" 
                 */
                 'node_offset': 1.4
             },
@@ -79,11 +79,10 @@ class topoflow{
                 'width': 20,
 
                 /*
-                    Then drawing multiple links between the same two nodes, this offset will be used to space the links evenly out.
+                    Then drawing multiple links between the same two nodes, this spacing will be used to space the links evenly out.
                     In points
-                    @TODO: Change variable name to "spacing" instead of "offset".
                 */
-                'offset': 20
+                'spacing': 20
             },
 
             /*
@@ -168,14 +167,14 @@ class topoflow{
 
 
     /**
-        * Will provide a list of link offset placements. This enables us to draw multiple links between nodes.
-        * In the example "number_of_links" being 5 and "link_offset" being 10 will wield the following result: [-20, -10, 0, 10, 20].
+        * Will provide a list of link spacing placements. This enables us to draw multiple links between nodes.
+        * In the example "number_of_links" being 5 and "link_spacing" being 10 will wield the following result: [-20, -10, 0, 10, 20].
         * If number_of_links === 1, the result will be [0] ("center the link")
 
-        * @param {number} number_of_links: Number of links, to calculate the correct offset
-        * @returns {list}: Offset values, from lowest to highest
+        * @param {number} number_of_links: Number of links, to calculate the correct spacing
+        * @returns {list}: spacing values, from lowest to highest
     */
-    calculate_offsets(number_of_links){
+    calculate_spacing(number_of_links){
         /*
             Prevents "division by zero" crash
         */
@@ -194,10 +193,10 @@ class topoflow{
             Do the calculations
         */
         let data = [];
-        let half_link_offset = this.options.link.offset/2;
-        let lowest_offset = (half_link_offset*number_of_links-half_link_offset)*-1;
-        // let i = lowest_offset; // why do i need this?
-        for (let i = lowest_offset; i <= lowest_offset*-1; i += this.options.link.offset){
+        let half_link_spacing= this.options.link.spacing/2;
+        let lowest_spacing = (half_link_spacing*number_of_links-half_link_spacing)*-1;
+        // let i = lowest_spacing; // why do i need this?
+        for (let i = lowest_spacing; i <= lowest_spacing*-1; i += this.options.link.spacing){
             data.push(i);
         }
         return data;
@@ -389,16 +388,16 @@ class topoflow{
             let cos_to_angle = Math.cos(angle_a_to_b);
 
             /*
-                Adjust for offset
+                Adjust for spacing
             */
 
-            let offset_x = sin_to_angle * args.offset;
-            let offset_y = cos_to_angle * args.offset;
+            let spacing_x = sin_to_angle * args.spacing;
+            let spacing_y = cos_to_angle * args.spacing;
 
-            let to_node_pos_x = this.main_dataset.nodes[args.to].x - offset_x;
-            let to_node_pos_y = this.main_dataset.nodes[args.to].y + offset_y;
-            let from_node_pos_x = this.main_dataset.nodes[args.from].x - offset_x;
-            let from_node_pos_y = this.main_dataset.nodes[args.from].y + offset_y;
+            let to_node_pos_x = this.main_dataset.nodes[args.to].x - spacing_x;
+            let to_node_pos_y = this.main_dataset.nodes[args.to].y + spacing_y;
+            let from_node_pos_x = this.main_dataset.nodes[args.from].x - spacing_x;
+            let from_node_pos_y = this.main_dataset.nodes[args.from].y + spacing_y;
             
             /*
                 Caclulate half way point
@@ -541,13 +540,13 @@ class topoflow{
                 Adjust for offset
             */
 
-            let offset_x = sin_to_angle * args.offset;
-            let offset_y = cos_to_angle * args.offset;
+            let spacing_x = sin_to_angle * args.spacing;
+            let spacing_y = cos_to_angle * args.spacing;
 
-            let to_node_pos_x = (this.main_dataset.nodes[args.to].x - offset_x) - cos_to_angle * (this.options.node_radius + arrow_offset);
-            let to_node_pos_y = (this.main_dataset.nodes[args.to].y + offset_y) - sin_to_angle * (this.options.node_radius + arrow_offset);
-            let from_node_pos_x = this.main_dataset.nodes[args.from].x - offset_x;
-            let from_node_pos_y = this.main_dataset.nodes[args.from].y + offset_y;
+            let to_node_pos_x = (this.main_dataset.nodes[args.to].x - spacing_x) - cos_to_angle * (this.options.node_radius + arrow_offset);
+            let to_node_pos_y = (this.main_dataset.nodes[args.to].y + spacing_y) - sin_to_angle * (this.options.node_radius + arrow_offset);
+            let from_node_pos_x = this.main_dataset.nodes[args.from].x - spacing_x;
+            let from_node_pos_y = this.main_dataset.nodes[args.from].y + spacing_y;
 
             /*
                 To flip the text rotation the easy way for humans to read (e.g. never upside down)
@@ -777,19 +776,17 @@ class topoflow{
                     let number_of_links = link_props.links.length;
 
                     console.log('Processing a total of ' + number_of_links+ ' links from ' + link_to + ' to ' + link_from);
-                    let link_offset_array = class_this.calculate_offsets(number_of_links);
+                    let link_spacing_array = class_this.calculate_spacing(number_of_links);
                     $.each(link_props.links, function(link_index, link){
                         /*
                             Draw each separate link
                         */
-                        let offset = link_offset_array[link_index];
-
-                        // console.log('Drawing link (' + link.type + ') between ' + link_to + ' and ' + link_from + ', width an offset of ' + offset);
+                        let spacing = link_spacing_array[link_index];
 
                         /*
                             Merge data into a new object to feed the draw_link*() functions
                         */
-                        let new_properties_formated = Object.assign({}, link, {'to': link_to, 'from': link_from, 'offset': offset});
+                        let new_properties_formated = Object.assign({}, link, {'to': link_to, 'from': link_from, 'spacing': spacing});
 
                         // The draw_* functions does not need to know of the type (1way, 2way), as it's dedicated functions beaing called for each type.
                         delete new_properties_formated.type;
