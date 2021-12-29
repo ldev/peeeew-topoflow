@@ -518,22 +518,20 @@ class topoflow{
             }
 
             /*
+                Onclick functions - will be implementet some time...
 
-
-                    .on("click", function(){
-                        console.log(d3.select(this).attr('y1'));
-                    }
-
-
-                    .on("mouseover", function(d) {
-                        d3.select(this).style("stroke", "#3236a8");
-                    })
-                    .on("mouseout", function(d) {
-                        d3.select(this).style("stroke", this.options.colors.link);
-                    })
-                    .on("click", function(){
-                        console.log(d3.select(this).attr('y1'));
-                    }
+                .on("click", function(){
+                    console.log(d3.select(this).attr('y1'));
+                }
+                .on("mouseover", function(d) {
+                    d3.select(this).style("stroke", "#3236a8");
+                })
+                .on("mouseout", function(d) {
+                    d3.select(this).style("stroke", this.options.colors.link);
+                })
+                .on("click", function(){
+                    console.log(d3.select(this).attr('y1'));
+                }
             */
 
             let link_a_b = this.svg
@@ -627,6 +625,13 @@ class topoflow{
             let to_node_pos_y = (this.main_dataset.nodes[args.to].y + spacing_y) - sin_to_angle * (this.options.node_radius + arrow_offset);
             let from_node_pos_x = this.main_dataset.nodes[args.from].x - spacing_x;
             let from_node_pos_y = this.main_dataset.nodes[args.from].y + spacing_y;
+
+            if('reversed' in args && args['reversed'] == true){
+                to_node_pos_x = (this.main_dataset.nodes[args.from].x - spacing_x) + cos_to_angle * (this.options.node_radius + arrow_offset);
+                to_node_pos_y = (this.main_dataset.nodes[args.from].y + spacing_y) + sin_to_angle * (this.options.node_radius + arrow_offset);
+                from_node_pos_x = this.main_dataset.nodes[args.to].x - spacing_x;
+                from_node_pos_y = this.main_dataset.nodes[args.to].y + spacing_y;
+            }
 
             /*
                 To flip the text rotation the easy way for humans to read (e.g. never upside down)
@@ -758,61 +763,65 @@ class topoflow{
                 @todo: More about the topic: https://stackoverflow.com/questions/13964155/get-javascript-object-from-array-of-objects-by-value-of-property
             */
             try{
-                // Create load color steps
-
-
                 // loop over each link object in the JSON dataset
-                $.each(data.links, function(not_in_use, y1){
+                $.each(data.links, function(not_in_use, outer_links_loop){
                     let state_machine_multiple_link_detected = false;
-                    let link_type = y1.type || '2way';
+                    let link_type = outer_links_loop.type || '2way';
 
                     // loop over each link in the json provided data
-                    $.each(class_this.main_dataset.links, function(x2_index, y2){
+                    $.each(class_this.main_dataset.links, function(inner_links_loop_index, inner_links_loop){
                         // if we've seen the [from, to] or [to, from] pair before, append to that
-                        if((y2.to === y1.to && y2.from === y1.from) || (y2.to === y1.from && y2.from === y1.to)){
+                        if((inner_links_loop.to === outer_links_loop.to && inner_links_loop.from === outer_links_loop.from) || (inner_links_loop.to === outer_links_loop.from && inner_links_loop.from === outer_links_loop.to)){
                             state_machine_multiple_link_detected = true;
-                            console.log("Multiple link detected (" + y1.to + ", " + y1.from + "), x2_index (" + x2_index + ")");
+                            console.log("Multiple link detected (" + outer_links_loop.to + ", " + outer_links_loop.from + "), inner_links_loop_index (" + inner_links_loop_index + ")");
 
                             if(link_type == '2way'){
                                 /*
                                     2 way link
                                 */
                                 // checkin if a -> b
-                                if(y2.to === y1.to && y2.from === y1.from){
-                                    // console.log('replacing index (a->b) ' + x2_index);
-                                    class_this.main_dataset['links'][x2_index]['links'].push({
+                                if(inner_links_loop.to === outer_links_loop.to && inner_links_loop.from === outer_links_loop.from){
+                                    class_this.main_dataset['links'][inner_links_loop_index]['links'].push({
                                         'type': link_type,
                                         'state': 'up',
-                                        'rate_in': y1.rate_in,
-                                        'rate_out': y1.rate_out,
-                                        'load_in': y1.load_in,
-                                        'load_out': y1.load_out
+                                        'rate_in': outer_links_loop.rate_in,
+                                        'rate_out': outer_links_loop.rate_out,
+                                        'load_in': outer_links_loop.load_in,
+                                        'load_out': outer_links_loop.load_out
                                     })
                                 }
 
                                 // checkin if b -> a
-                                if(y2.to === y1.from && y2.from === y1.to){
-                                    // console.log('replacing index (b->a) ' + x2_index);
-                                    class_this.main_dataset['links'][x2_index]['links'].push({
+                                if(inner_links_loop.to === outer_links_loop.from && inner_links_loop.from === outer_links_loop.to){
+                                    class_this.main_dataset['links'][inner_links_loop_index]['links'].push({
                                         'type': link_type,
                                         'state': 'up',
-                                        'rate_out': y1.rate_in, // reversed
-                                        'rate_in': y1.rate_out, // reversed
-                                        'load_in': y1.load_out, // reversed
-                                        'load_out': y1.load_in // reversed
+                                        'rate_out': outer_links_loop.rate_in, // reversed
+                                        'rate_in': outer_links_loop.rate_out, // reversed
+                                        'load_in': outer_links_loop.load_out, // reversed
+                                        'load_out': outer_links_loop.load_in // reversed
                                     })
                                 }
                             }else{
                                 /*
                                     1 way link
                                 */
-                                if(y2.to === y1.to && y2.from === y1.from){
-                                    // console.log('replacing index (a->b) ' + x2_index);
-                                    class_this.main_dataset['links'][x2_index]['links'].push({
+                                if(inner_links_loop.to === outer_links_loop.to && inner_links_loop.from === outer_links_loop.from){
+                                    class_this.main_dataset['links'][inner_links_loop_index]['links'].push({
                                         'type': link_type,
                                         'state': 'up',
-                                        'rate': y1.rate,
-                                        'load': y1.load,
+                                        'rate': outer_links_loop.rate,
+                                        'load': outer_links_loop.load,
+                                    })
+                                }
+
+                                if(inner_links_loop.to === outer_links_loop.from && inner_links_loop.from === outer_links_loop.to){
+                                    class_this.main_dataset['links'][inner_links_loop_index]['links'].push({
+                                        'type': link_type,
+                                        'state': 'up',
+                                        'rate': outer_links_loop.rate,
+                                        'load': outer_links_loop.load,
+                                        'reversed' : true
                                     })
                                 }
                             }
@@ -824,15 +833,15 @@ class topoflow{
                                 2 way link
                             */
                             class_this.main_dataset['links'].push({
-                                'to': y1.to,
-                                'from': y1.from,
+                                'to': outer_links_loop.to,
+                                'from': outer_links_loop.from,
                                 'links': [{
                                     'type': link_type,
                                     'state': 'up',
-                                    'rate_in': y1.rate_in,
-                                    'rate_out': y1.rate_out,
-                                    'load_in': y1.load_in,
-                                    'load_out': y1.load_out
+                                    'rate_in': outer_links_loop.rate_in,
+                                    'rate_out': outer_links_loop.rate_out,
+                                    'load_in': outer_links_loop.load_in,
+                                    'load_out': outer_links_loop.load_out
                                 }]
                             });
                         }else{
@@ -840,13 +849,13 @@ class topoflow{
                                 1 way link
                             */
                             class_this.main_dataset['links'].push({
-                                'to': y1.to,
-                                'from': y1.from,
+                                'to': outer_links_loop.to,
+                                'from': outer_links_loop.from,
                                 'links': [{
                                     'type': link_type,
                                     'state': 'up',
-                                    'rate': y1.rate,
-                                    'load': y1.load,
+                                    'rate': outer_links_loop.rate,
+                                    'load': outer_links_loop.load,
                                 }]
                             });
                         }

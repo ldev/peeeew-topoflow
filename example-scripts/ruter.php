@@ -12,8 +12,8 @@ $y_center = 700;
 
 $GLOBALS["obj_json"]->options->text->node_position = "center";
 $GLOBALS["obj_json"]->options->node_radius = 20;
-$GLOBALS["obj_json"]->options->link->width = 2;
-$GLOBALS["obj_json"]->options->link->spacing = 5;
+$GLOBALS["obj_json"]->options->link->width = 3;
+$GLOBALS["obj_json"]->options->link->spacing = 10;
 
 $url = "https://api.entur.io/realtime/v1/rest/vm?datasetId=RUT";
 $xml = simplexml_load_file($url);
