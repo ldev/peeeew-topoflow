@@ -1,60 +1,60 @@
 class Topoflow {
-    // Defines the default options for the maps. This is to be able to override options by each JSON source.
-    private options = {
-        // All colors definitions goes here
-        'colors': {
-            'circle_fill': '#000',
-            'circle_outline': '#fff',
-            'circle_outline_down': '#f00',
-            'arrow_pointer': '#fff',
-            'svg_background_color': '#000',
-            'link': '#fff',
-            'link_down': '#f00',
-            'link_text': '#f0a',
-            'node_text': '#fff',
-        'load': [
+    constructor() {
+        // Defines the default options for the maps. This is to be able to override options by each JSON source.
+        this.options = {
+            // All colors definitions goes here
+            'colors': {
+                'circle_fill': '#000',
+                'circle_outline': '#fff',
+                'circle_outline_down': '#f00',
+                'arrow_pointer': '#fff',
+                'svg_background_color': '#000',
+                'link': '#fff',
+                'link_down': '#f00',
+                'link_text': '#f0a',
+                'node_text': '#fff',
+            'load': [
                     '#f00', // >0%
                     '#ff0', // >33%
                     '#0f0' // > 66%
                 ]
             },
 
-        // All text/font properties goes here
-        'text': {
-            /*  Where node text position should be. Supported:
-                    * bottom, top, right, left
-                    * <anything else> (which will be drawn centered)  */
-            'node_position': 'bottom',
-            /*  Whether or not the optional text on the links should be rotated along the link or not
-                false: no rotation
-                true: text is rotated along the link  */
-            'link_follow_angle': true,
-            // Prevents the link text from being displayed upside down (180 degrees)
-            'link_prevent_upside_down': true,
-            // Default offset of text to node. This is multiplied by "node_radius"
-            'node_offset': 1.4
-        },
-        // Sets the radius of the node, if node type is not specified, or node type is "circle"
-        'node_radius': 40,
+            // All text/font properties goes here
+            'text': {
+                /*  Where node text position should be. Supported:
+                        * bottom, top, right, left
+                        * <anything else> (which will be drawn centered)  */
+                'node_position': 'bottom',
+                /*  Whether or not the optional text on the links should be rotated along the link or not
+                    false: no rotation
+                    true: text is rotated along the link  */
+                'link_follow_angle': true,
+                // Prevents the link text from being displayed upside down (180 degrees)
+                'link_prevent_upside_down': true,
+                // Default offset of text to node. This is multiplied by "node_radius"
+                'node_offset': 1.4
+            },
+            // Sets the radius of the node, if node type is not specified, or node type is "circle"
+            'node_radius': 40,
 
-        // Misc. link properties goes here
-        'link': {
-            // Width of the link in points
-            'width': 20,
+            // Misc. link properties goes here
+            'link': {
+                // Width of the link in points
+                'width': 20,
 
-            /*
-                Then drawing multiple links between the same two nodes, this spacing will be used to space the links evenly out.
-                In points
-            */
-            'spacing': 20
-        },
-        // Not implemented yet
-        'display_fullscreen': false,
-        'svg_width': 1500,
-        'svg_height': 1000
-    };
+                /*
+                    Then drawing multiple links between the same two nodes, this spacing will be used to space the links evenly out.
+                    In points
+                */
+                'spacing': 20
+            },
+            // Not implemented yet
+            'display_fullscreen': false,
+            'svg_width': 1500,
+            'svg_height': 1000
+        };
 
-    constructor() {
         // Initialize the SVG element
         this.svg_container = d3.select("#canvas");
         this.svg = this.svg_container.append("g").attr('class', 'main_group');
@@ -139,7 +139,7 @@ class Topoflow {
      * @param {number} number_of_links: Number of links, to calculate the correct spacing
      * @returns {list}: spacing values, from lowest to highest
      */
-    public calculate_spacing(number_of_links) {
+    calculate_spacing(number_of_links) {
         // Prevents "division by zero" crash
         if (number_of_links === 0) {
             return false;
@@ -229,7 +229,7 @@ class Topoflow {
      * @param {object}       Parameters. See "required_node_parameters" variable for list of required variables.
      * @return {boolean}     True on success, false on error (like missing parameters). Check console output for errors.
      */
-    public draw_node(args) {
+    draw_node(args) {
         // Validating args to confirm required node parameters
         for (prop in this.required_node_parameters) {
             if (this.required_node_parameters[prop] in args !== true) {
@@ -512,7 +512,7 @@ class Topoflow {
         * Used for drawing a 1 way link
         * @param args
     */
-    public draw_link_1way(args) {
+    draw_link_1way(args) {
         try {
             console.log('Drawing 1way link from ' + args.from + ' to ' + args.to + ' with the following args', args);
 
@@ -616,7 +616,7 @@ class Topoflow {
      * @param {object} args: must contain 'x', 'y' and 'text'
      * @return {boolean}
      */
-    public draw_text_on_link(args) {
+    draw_text_on_link(args) {
         let newly_drawn_text = this.svg.append("text")
             .attr('class', 'link-text')
             .attr('x', args.x)
@@ -634,7 +634,7 @@ class Topoflow {
         Calling set_default_options() from class initialization overwrites the default options
         "options" from the JSON file overwrites set_default_options()
     */
-    public overwrite_options(args) {
+    overwrite_options(args) {
         console.log('Attempting to overwrite the current options with this', args);
 
         for (const [key, value] of Object.entries(args)) {
@@ -652,7 +652,7 @@ class Topoflow {
     }
 
     // Populate the dataset
-    public run(json_file) {
+    run(json_file) {
         console.log('run() called (json file: ' + json_file + ')');
         // prevent caching
         let class_this = this; // because getJSON overwrites "this"
