@@ -470,10 +470,10 @@ class topoflow{
             let spacing_x = sin_to_angle * args.spacing;
             let spacing_y = cos_to_angle * args.spacing;
 
-            let to_node_pos_x = this.main_dataset.nodes[args.to].x - spacing_x;
-            let to_node_pos_y = this.main_dataset.nodes[args.to].y + spacing_y;
-            let from_node_pos_x = this.main_dataset.nodes[args.from].x - spacing_x;
-            let from_node_pos_y = this.main_dataset.nodes[args.from].y + spacing_y;
+            let to_node_pos_x = parseInt(this.main_dataset.nodes[args.to].x) - spacing_x;
+            let to_node_pos_y = parseInt(this.main_dataset.nodes[args.to].y) + spacing_y;
+            let from_node_pos_x = parseInt(this.main_dataset.nodes[args.from].x) - spacing_x;
+            let from_node_pos_y = parseInt(this.main_dataset.nodes[args.from].y) + spacing_y;
             
             /*
                 Caclulate half way point
@@ -621,16 +621,16 @@ class topoflow{
             let spacing_x = sin_to_angle * args.spacing;
             let spacing_y = cos_to_angle * args.spacing;
 
-            let to_node_pos_x = (this.main_dataset.nodes[args.to].x - spacing_x) - cos_to_angle * (this.options.node_radius + arrow_offset);
-            let to_node_pos_y = (this.main_dataset.nodes[args.to].y + spacing_y) - sin_to_angle * (this.options.node_radius + arrow_offset);
-            let from_node_pos_x = this.main_dataset.nodes[args.from].x - spacing_x;
-            let from_node_pos_y = this.main_dataset.nodes[args.from].y + spacing_y;
+            let to_node_pos_x = (parseInt(this.main_dataset.nodes[args.to].x) - spacing_x) - cos_to_angle * (this.options.node_radius + arrow_offset);
+            let to_node_pos_y = (parseInt(this.main_dataset.nodes[args.to].y) + spacing_y) - sin_to_angle * (this.options.node_radius + arrow_offset);
+            let from_node_pos_x = parseInt(this.main_dataset.nodes[args.from].x) - spacing_x;
+            let from_node_pos_y = parseInt(this.main_dataset.nodes[args.from].y) + spacing_y;
 
             if('reversed' in args && args['reversed'] == true){
-                to_node_pos_x = (this.main_dataset.nodes[args.from].x - spacing_x) + cos_to_angle * (this.options.node_radius + arrow_offset);
-                to_node_pos_y = (this.main_dataset.nodes[args.from].y + spacing_y) + sin_to_angle * (this.options.node_radius + arrow_offset);
-                from_node_pos_x = this.main_dataset.nodes[args.to].x - spacing_x;
-                from_node_pos_y = this.main_dataset.nodes[args.to].y + spacing_y;
+                to_node_pos_x = (parseInt(this.main_dataset.nodes[args.from].x) - spacing_x) + cos_to_angle * (this.options.node_radius + arrow_offset);
+                to_node_pos_y = (parseInt(this.main_dataset.nodes[args.from].y) + spacing_y) + sin_to_angle * (this.options.node_radius + arrow_offset);
+                from_node_pos_x = parseInt(this.main_dataset.nodes[args.to].x) - spacing_x;
+                from_node_pos_y = parseInt(this.main_dataset.nodes[args.to].y) + spacing_y;
             }
 
             /*
