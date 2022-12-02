@@ -1,0 +1,48 @@
+{
+  "options": {
+    "text": {
+      "link_prevent_upside_down": true
+    }
+  },
+  "nodes": {
+    "node 1": {
+      "x": 100,
+      "y": 100
+    },
+    "node 2": {
+      "x": 900,
+      "y": 100
+    },
+    "node 3": {
+      "x": 600,
+      "y": 600
+    },
+    "node 4": {
+      "x": 1400,
+      "y": 600
+    }
+  },
+  "links": [
+    {
+      "from": "node 2",
+      "to": "node 1",
+      "rate_in": "test"
+    },
+    {
+      "from": "node 2",
+      "to": "node 3",
+      "rate_in": "test4"
+    },
+    {
+      "from": "node 3",
+      "to": "node 1",
+      "type": "1way",
+      "rate": "test2"
+    },
+    {
+      "from": "node 4",
+      "to": "node 2",
+      "rate_in": "test3"
+    }
+  ]
+}

@@ -453,6 +453,11 @@ class topoflow{
                 The Math.atan2() function returns the angle in the plane (in radians) between the positive x-axis and the ray from (0,0) to the point (x,y), for Math.atan2(y,x)
             */
             let angle_a_to_b = Math.atan2(this.main_dataset.nodes[args.to].y - this.main_dataset.nodes[args.from].y, this.main_dataset.nodes[args.to].x - this.main_dataset.nodes[args.from].x);
+            
+            /*
+                degrees will be between -180 and 180.
+                0 degrees = regular way to read text
+            */
             let degrees = angle_a_to_b*(180/Math.PI)
             let sin_to_angle = Math.sin(angle_a_to_b);
             let cos_to_angle = Math.cos(angle_a_to_b);
@@ -488,8 +493,7 @@ class topoflow{
             let text_degrees = 0;
             if(this.options.text.link_follow_angle === true){
                 text_degrees = degrees;
-
-                if(this.options.text.link_prevent_upside_down === true && text_degrees > 90 && text_degrees <= 180){
+                if(this.options.text.link_prevent_upside_down === true && (text_degrees > 90 || text_degrees < -90)){
                     text_degrees += 180;
                 }
             }
@@ -639,8 +643,7 @@ class topoflow{
             let text_degrees = 0;
             if(this.options.text.link_follow_angle === true){
                 text_degrees = degrees;
-
-                if(this.options.text.link_prevent_upside_down === true && text_degrees > 90 && text_degrees <= 180){
+                if(this.options.text.link_prevent_upside_down === true && (text_degrees > 90 || text_degrees < -90)){
                     text_degrees += 180;
                 }
             }
