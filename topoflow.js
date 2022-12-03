@@ -64,7 +64,17 @@ class topoflow{
                 /*
                     Default offset of text to node. This is multiplied by "node_radius" 
                 */
-                'node_offset': 1.4
+                'node_offset': 1.4,
+
+                /*
+                    Text size for nodes. Defaults to ???. Not implemented yet
+                */
+                'text_size_nodes': "unknown",
+
+                /*
+                    Text size for links. Defaults to ???. Not implemented yet
+                */
+                'text_size_links': "unknown",
             },
 
 
@@ -442,12 +452,11 @@ class topoflow{
     draw_link_2way(args){
         try{
             console.log('Drawing regular (2way) link from ' + args.from + ' to ' + args.to, args);
-            // console.log(args);
 
             // global settings
-            let split_point = 0.5;
-            let text_pos = 0.5;
-            let arrow_offset =20;
+            let split_point = 0.5; // Where the arrows on the bidirectional link (it's 1 link with arrows in the middle...) will be placed
+            let text_pos = 0.5; // places the text not in the center of the link (between the arrows), but halfway between center of link and node
+            let arrow_offset = 20; // Size of the arrow in points
 
             /*
                 The Math.atan2() function returns the angle in the plane (in radians) between the positive x-axis and the ray from (0,0) to the point (x,y), for Math.atan2(y,x)
@@ -458,7 +467,8 @@ class topoflow{
                 degrees will be between -180 and 180.
                 0 degrees = regular way to read text
             */
-            let degrees = angle_a_to_b*(180/Math.PI)
+            let degrees = angle_a_to_b*(180/Math.PI);
+
             let sin_to_angle = Math.sin(angle_a_to_b);
             let cos_to_angle = Math.cos(angle_a_to_b);
 
@@ -469,9 +479,8 @@ class topoflow{
             let link_color_out = this.link_load_color(args.load_out);
 
             /*
-                Adjust for spacing
+                Adjust for spacing (spacing between parallell links?)
             */
-
             let spacing_x = sin_to_angle * args.spacing;
             let spacing_y = cos_to_angle * args.spacing;
 
@@ -573,17 +582,20 @@ class topoflow{
                 Do not draw text on links if the link is down
             */
             if(link_state !== 'down'){
-
                 this.draw_text_on_link({
-                    x: from_node_pos_x+((to_node_pos_x-from_node_pos_x)*split_point*text_pos),
-                    y: from_node_pos_y+((to_node_pos_y-from_node_pos_y)*split_point*text_pos),
+                    /*
+                        So you will hate your self a bit less in the future:
+                        x = <node position> + (<diff between nodes> * <where on the link the text placement should be>) + <offset for node radius> - <offset for arrow>
+                    */
+                    x: from_node_pos_x + ((to_node_pos_x - from_node_pos_x) * (split_point * text_pos)) + (cos_to_angle * this.options.node_radius / 2) - (cos_to_angle * arrow_offset / 2),
+                    y: from_node_pos_y + ((to_node_pos_y - from_node_pos_y) * (split_point * text_pos)) + (sin_to_angle * this.options.node_radius / 2) - (sin_to_angle * arrow_offset / 2),
                     text: rate_in,
                     degrees: text_degrees
                 });
 
                 this.draw_text_on_link({
-                    x: to_node_pos_x-((to_node_pos_x-from_node_pos_x)*split_point*text_pos),
-                    y: to_node_pos_y-((to_node_pos_y-from_node_pos_y)*split_point*text_pos),
+                    x: to_node_pos_x-((to_node_pos_x-from_node_pos_x)*split_point*text_pos)-(cos_to_angle * this.options.node_radius / 2)+(cos_to_angle * arrow_offset / 2),
+                    y: to_node_pos_y-((to_node_pos_y-from_node_pos_y)*split_point*text_pos)-(sin_to_angle * this.options.node_radius / 2)+(sin_to_angle * arrow_offset / 2),
                     text: rate_out,
                     degrees: text_degrees
                 });
@@ -693,9 +705,14 @@ class topoflow{
                 Do not draw text on links if the link is down
             */
             if(link_state !== 'down'){
+
+                console.log('sin_to_angle:', sin_to_angle);
+                console.log('cos_to_angle:', cos_to_angle);
+                console.log('this.options.node_radius:', this.options.node_radius);
+
                 this.draw_text_on_link({
-                    x: from_node_pos_x+((to_node_pos_x-from_node_pos_x)*text_pos),
-                    y: from_node_pos_y+((to_node_pos_y-from_node_pos_y)*text_pos),
+                    x: from_node_pos_x + ((to_node_pos_x - from_node_pos_x) * text_pos) + (cos_to_angle * this.options.node_radius) / 2,
+                    y: from_node_pos_y + ((to_node_pos_y - from_node_pos_y) * text_pos) + (sin_to_angle * this.options.node_radius) / 2,
                     text: rate,
                     degrees: text_degrees
                 });
@@ -770,6 +787,7 @@ class topoflow{
                 $.each(data.links, function(not_in_use, outer_links_loop){
                     let state_machine_multiple_link_detected = false;
                     let link_type = outer_links_loop.type || '2way';
+                    let link_state = outer_links_loop.state || 'up';
 
                     // loop over each link in the json provided data
                     $.each(class_this.main_dataset.links, function(inner_links_loop_index, inner_links_loop){
@@ -786,7 +804,7 @@ class topoflow{
                                 if(inner_links_loop.to === outer_links_loop.to && inner_links_loop.from === outer_links_loop.from){
                                     class_this.main_dataset['links'][inner_links_loop_index]['links'].push({
                                         'type': link_type,
-                                        'state': 'up',
+                                        'state': link_state,
                                         'rate_in': outer_links_loop.rate_in,
                                         'rate_out': outer_links_loop.rate_out,
                                         'load_in': outer_links_loop.load_in,
@@ -798,7 +816,7 @@ class topoflow{
                                 if(inner_links_loop.to === outer_links_loop.from && inner_links_loop.from === outer_links_loop.to){
                                     class_this.main_dataset['links'][inner_links_loop_index]['links'].push({
                                         'type': link_type,
-                                        'state': 'up',
+                                        'state': link_state,
                                         'rate_out': outer_links_loop.rate_in, // reversed
                                         'rate_in': outer_links_loop.rate_out, // reversed
                                         'load_in': outer_links_loop.load_out, // reversed
@@ -812,7 +830,7 @@ class topoflow{
                                 if(inner_links_loop.to === outer_links_loop.to && inner_links_loop.from === outer_links_loop.from){
                                     class_this.main_dataset['links'][inner_links_loop_index]['links'].push({
                                         'type': link_type,
-                                        'state': 'up',
+                                        'state': link_state,
                                         'rate': outer_links_loop.rate,
                                         'load': outer_links_loop.load,
                                     })
@@ -821,7 +839,7 @@ class topoflow{
                                 if(inner_links_loop.to === outer_links_loop.from && inner_links_loop.from === outer_links_loop.to){
                                     class_this.main_dataset['links'][inner_links_loop_index]['links'].push({
                                         'type': link_type,
-                                        'state': 'up',
+                                        'state': link_state,
                                         'rate': outer_links_loop.rate,
                                         'load': outer_links_loop.load,
                                         'reversed' : true
@@ -840,7 +858,7 @@ class topoflow{
                                 'from': outer_links_loop.from,
                                 'links': [{
                                     'type': link_type,
-                                    'state': 'up',
+                                    'state': link_state,
                                     'rate_in': outer_links_loop.rate_in,
                                     'rate_out': outer_links_loop.rate_out,
                                     'load_in': outer_links_loop.load_in,
@@ -856,7 +874,7 @@ class topoflow{
                                 'from': outer_links_loop.from,
                                 'links': [{
                                     'type': link_type,
-                                    'state': 'up',
+                                    'state': link_state,
                                     'rate': outer_links_loop.rate,
                                     'load': outer_links_loop.load,
                                 }]
@@ -927,6 +945,7 @@ class topoflow{
                             Merge data into a new object to feed the draw_link*() functions
                         */
                         let new_properties_formated = Object.assign({}, link, {'to': link_to, 'from': link_from, 'spacing': spacing});
+                        console.log('new_properties_formated: ', new_properties_formated);
 
                         // The draw_* functions does not need to know of the type (1way, 2way), as it's dedicated functions beaing called for each type.
                         delete new_properties_formated.type;
