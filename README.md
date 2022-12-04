@@ -195,6 +195,38 @@ Here are all the available things to set and toggle in json file topoflow loads.
   * right
   * left
 
+## boxes
+Used to draw boxes in the background. Usefull for grouping of nodes. Boxes will be drawn in the background of everything else.
+
+NB: "links" cannot be drawn from box to box directly.
+
+![Box usage](/example-images/example-box.png)
+
+### Example
+```
+{
+  "boxes": [
+    {
+      "corner_a_x": 50,
+      "corner_a_y": 600,
+      "corner_b_x": 1450,
+      "corner_b_y": 1000,
+      "background_color": "#333",
+      "border_color": "#f00",
+      "border_width": 5,
+      "opacity": 50,
+      "text_placement": "top", <---- Not implemented yet
+      "text": "Inet" <---- Not implemented yet
+    },
+    {
+      "corner_a_x": 50,
+      "corner_a_y": 10,
+      "corner_b_x": 1450,
+      "corner_b_y": 500
+    }
+  ]
+}
+```
 
 
 ## options
@@ -234,7 +266,7 @@ In the JSON file
 ```
 
 ### Definitions
-Everything under options are optional.
+Everything under options are ... optional.
 
 Possible options to toggle
 * `text`
@@ -281,7 +313,23 @@ As we're lazy, here is the code directly from topoflow.js
   * Default: 1000 (points/pixels)
 * `svg_width` Width of the <svg> element
   * Can be set either as points (1000) or as percent ("100%") 
-  * Default: 1000 (points/pixels)
+  * Default: 1500 (points/pixels)
+* `boxes`
+  * `background_color` Background color of all boxes unless overridden
+    * Default: "#cccccc"
+  * `border_color` Border color ("stroke color")
+    * Defaults: "#666666"
+  * `border_width` Width of the border
+    * Defaults: 3 (points)
+  * `radius` Corner radius, value covers both "rx" and "ry"
+    * Defaults: 10 (points)
+  * `opacity` Opacity of the box. Covers both background and border
+    * Defaults: "50%"
+  * `border_dashed` Whether or not the border should be "dashed" by default
+    * Defaults: true
+  * `text_placement` Where to place the text field in the box. Text is optional. This value is not implemented yet
+    * Defaults: "top"
+
 
 # Made by who
 Two network engineers, not satisfied with what we could find in the open source world.

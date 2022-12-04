@@ -2,44 +2,62 @@
   "options": {
     "text": {
       "link_follow_angle": true,
-      "link_prevent_upside_down": true
-    }
+      "link_prevent_upside_down": true,
+      "node_position": "center"
+    },
+    "node_radius": 70,
+    "svg_height": 1200,
+    "svg_width": 1600
   },
+  "boxes": [
+    {
+      "corner_a_x": 50,
+      "corner_a_y": 600,
+      "corner_b_x": 1450,
+      "corner_b_y": 1000,
+      "background_color": "#333",
+      "border_color": "#f00",
+      "border_width": 5,
+      "opacity": 50,
+      "text_placement": "top",
+      "text": "Inet"
+    },
+    {
+      "corner_a_x": 50,
+      "corner_a_y": 10,
+      "corner_b_x": 1450,
+      "corner_b_y": 500
+    }
+  ],
   "nodes": {
     "00a-core-1": {
       "x": 550,
       "y": 100,
-      "type": "router",
-      "text_position" : "top"
+      "type": "router"
     },
     "00a-core-2": {
       "x": 550,
       "y": 400,
-      "type": "router",
-      "text_position" : "bottom-left"
+      "type": "router"
     },
     "00b-core-1": {
       "x": 950,
       "y": 100,
-      "type": "router",
-      "text_position" : "top"
+      "type": "router"
     },
     "00b-core-2": {
       "x": 950,
       "y": 400,
-      "type": "router",
-      "text_position" : "pizza tastes great!"
+      "type": "router"
     },
 
     "00a-core-agg-1": {
       "x": 150,
-      "y": 400,
-      "text_position" : "top-left"
+      "y": 400
     },
     "00b-core-agg-1": {
       "x": 1350,
-      "y": 400,
-      "text_position" : "top-right"
+      "y": 400
     },
 
     "00a-fw-inet-1": {

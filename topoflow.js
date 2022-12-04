@@ -1,3 +1,7 @@
+/*
+    Version: 2022-12-04
+*/
+
 class topoflow{
     constructor(){
         /*
@@ -29,7 +33,7 @@ class topoflow{
                 'svg_background_color': '#000',
                 'link': '#fff',
                 'link_down': '#f00',
-                'link_text': '#f0a',
+                'link_text': '#000',
                 'node_text': '#fff',
                 'load': [
                     '#f00', // >0%
@@ -109,7 +113,40 @@ class topoflow{
             /*
                 Not implemented yet
             */
-            'display_fullscreen': false
+            'display_fullscreen': false,
+
+            /*
+                Boxes properties goes here. Needs more comments :-)
+            */
+            'boxes': {
+              'background_color': "#cccccc",
+              'border_color': "#666666",
+
+              /*
+                Width of the border
+              */
+              'border_width': 3,
+
+              /*
+                Corner radius, value covers both "rx" and "ry"
+              */
+              'radius': 10,
+
+              /*
+                Covers both fill and stroke
+              */
+              'opacity': "50%",
+
+
+
+              'text_placement': "top",
+
+              /*
+                Whether or not the border should be "dashed" by default.
+                fefault: true
+              */
+              'border_dashed': true
+            }
         };
 
 
@@ -705,11 +742,6 @@ class topoflow{
                 Do not draw text on links if the link is down
             */
             if(link_state !== 'down'){
-
-                console.log('sin_to_angle:', sin_to_angle);
-                console.log('cos_to_angle:', cos_to_angle);
-                console.log('this.options.node_radius:', this.options.node_radius);
-
                 this.draw_text_on_link({
                     x: from_node_pos_x + ((to_node_pos_x - from_node_pos_x) * text_pos) + (cos_to_angle * this.options.node_radius) / 2,
                     y: from_node_pos_y + ((to_node_pos_y - from_node_pos_y) * text_pos) + (sin_to_angle * this.options.node_radius) / 2,
@@ -740,7 +772,67 @@ class topoflow{
         return true;
     }
 
+
     /*
+        Draw boxes with arguments
+        @param {object} args: must contain "corner_a_x", "corner_a_y", "corner_b_x", "corner_b_y" as a minimum
+        Optional key-values in $args:
+            rounded_corners <int>
+            background_color: #<hex>
+            border_color: #hex
+            border_width: <int>
+            opacity: <string>
+            text_placement: <position> (see node text placement as name ref.)
+            text: <string>
+    */
+    draw_box(args){
+        console.log('draw_box called with the following args:', args);
+        let box_properties = {
+            'background_color': args.background_color || this.options.boxes.background_color,
+            'border_color': args.border_color || this.options.boxes.border_color,
+            'border_width': args.border_width || this.options.boxes.border_width,
+            'radius': args.radius || this.options.boxes.radius
+        };
+        if('dashed' in args && args.dashed == false){
+
+        }else{
+           box_properties['border_dashed'] = box_properties.border_width; 
+        }
+        
+        
+
+
+        console.log('box_properties: ', box_properties);
+        
+        /*
+        let box_background_color = args.background_color || this.options.boxes.background_color;
+        let box_border_color = args.border_color || this.options.boxes.border_color;
+        */
+        /*
+        Fra options
+            'background_color': "#cccccc",
+            'border_color': "#666666",
+            'border_width': 3,
+            'opacity': 50,
+            'text_placement': "top",
+        */
+
+        let new_box = this.svg.append("rect")
+            .attr('x', args.corner_a_x)
+            .attr('y', args.corner_a_y)
+            .attr('width', args.corner_b_x-args.corner_a_x)
+            .attr('height', args.corner_b_y-args.corner_a_y)
+            .attr('fill', box_properties.background_color)
+            .attr('stroke', box_properties.border_color)
+            .attr('stroke-width', box_properties.border_width)
+            .attr('stroke-dasharray', box_properties.border_dashed)
+            .attr('rx', box_properties.radius)
+        return true;
+        
+    }
+
+
+    /**
         Used for overwriting the default options.
         Calling set_default_options() from class initialization overwrites the default options
         "options" from the JSON file overwrites set_default_options()
@@ -917,6 +1009,20 @@ class topoflow{
                 console.error('Error while parsing "options" from JSON: ' + error);
             }
             console.log('options now', class_this.options);
+
+
+            /*
+                Draw boxes
+            */
+            try{
+                $.each(data.boxes, function(not_in_use, boxes_args){
+                    console.log('boxes_args in loop: ', boxes_args);
+                    class_this.draw_box(boxes_args);
+                });
+            }catch(error){
+                console.error('Error while drawing boxes: ' + error);
+            }
+
 
             /*
                 Find the links in the dataset, and draw them
